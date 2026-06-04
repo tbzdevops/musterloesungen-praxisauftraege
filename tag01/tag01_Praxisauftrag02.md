@@ -1,8 +1,8 @@
-# Musterlösung – 📓 Auftrag 2: The Three Ways anwenden
+# Musterlösung – 📓 Auftrag 2: The Three Ways anwenden *(Gruppe 2)*
 
-**Format:** Gruppenarbeit (3–4er) + Präsentation
-**Ziel:** Flow, Feedback und kontinuierliches Lernen verstehen und Engpässe in einem realen
-Wertstrom erkennen.
+**Format:** Gruppenarbeit + Präsentation
+**Ziel:** Flow, Feedback und kontinuierliches Lernen verstehen und Engpässe im Wertstrom
+„von der Code-Änderung bis in Produktion" (Szenario „Wunschliste") erkennen.
 
 ---
 
@@ -24,24 +24,37 @@ aufbauen. Man kann sie als aufeinander aufbauende Schritte lesen.
 
 ---
 
-## Musterlösung der Gruppenarbeit (Beispiel-Wertstrom: TechStyle "Code-Änderung → Produktion")
+## Das Szenario (Kurzfassung)
 
-| Weg | Beobachteter Engpass bei TechStyle | Erster Lösungsschritt | Messbar via DORA |
-|-----|------------------------------------|-----------------------|------------------|
-| **1. Flow** | Manuelle Deployments dauern Stunden; Releases stauen sich zu grossen Paketen. | CI/CD-Pipeline + kleinere, häufigere Releases. | Lead Time for Changes ↓, Deployment Frequency ↑ |
-| **2. Feedback** | Fehler fallen erst Kunden in Produktion auf; keine automatischen Tests. | Automatisierte Tests in der Pipeline + Monitoring/Alerts. | Change Failure Rate ↓ |
-| **3. Lernen** | Nach Incidents keine Aufarbeitung; dieselben Fehler wiederholen sich. | Blameless Post-Mortems + feste Zeit für Verbesserungsarbeit. | Time to Restore Service ↓ |
+> Entwicklerin **Sara** baut die Wunschliste. Tag 1: Feature in einem grossen Branch, Test nur „auf
+> meinem Laptop". Tag 2–6: PR liegt 4 Tage, weil nur der Teamleiter reviewen darf. Tag 7–13:
+> separate QA testet von Hand, schickt einen Bug zurück (Kontextverlust). Tag 14, freitags 18:00:
+> Markus deployt 6 Features gebündelt per FTP, ohne automatische Tests. Wochenende: Fehler bei
+> jedem zweiten Klick, **niemand merkt es** (kein Monitoring). Montag: Kundenbeschwerden, ganzes
+> Release wird zurückgerollt. Danach: **kein Post-mortem** – 3 Wochen später fast derselbe Fehler.
+
+---
+
+## Musterlösung der Gruppenarbeit
+
+| Weg | Beobachtete Engpässe im Szenario | Grösster Engpass | Erster Lösungsschritt | Messbar via DORA |
+|-----|----------------------------------|------------------|-----------------------|------------------|
+| **1. Flow** | 4 Tage Review-Stau (nur Teamleiter reviewt); grosse Batches (1 grosser Branch, 6 Features in einem Release); Gesamtdurchlaufzeit 14 Tage. | Der **Review-Engpass** + das Bündeln zu Grossreleases. | Review entlasten (mehrere Reviewer / kleine PRs) und **kleine, häufige Releases** statt eines Quartalspakets; CI/CD ab Tag 04. | Lead Time for Changes ↓, Deployment Frequency ↑ |
+| **2. Feedback** | Keine automatischen Tests; manuelle QA erst nach Tagen; Fehler erst über **Kundenbeschwerden am Montag** sichtbar (kein Monitoring). | Fehler werden **zu spät** (in Produktion, durch Kunden) entdeckt. | **Automatisierte Tests in der Pipeline** (Tag 06/07) + **Monitoring/Alerts** in Produktion (Tag 10/11). | Change Failure Rate ↓ |
+| **3. Lernen** | **Kein Post-mortem** nach dem Rollback; derselbe Fehler wiederholt sich 3 Wochen später; Wissen bleibt bei Einzelnen. | Aus Fehlern wird **nicht gelernt** – sie wiederholen sich. | **Blameless Post-Mortems** nach jedem Incident + feste Zeit für Verbesserungsarbeit (Retros/Workshops). | Time to Restore Service ↓ |
 
 ### Erwartetes Präsentationsergebnis
 Eine Gruppe hat die Aufgabe gut gelöst, wenn sie:
 - die **drei Wege** korrekt benennt und in der richtigen Reihenfolge (Flow → Feedback → Lernen) erklärt,
-- für jeden Weg einen **konkreten Engpass** im gewählten Wertstrom identifiziert,
-- pro Weg einen **plausiblen ersten Lösungsschritt** vorschlägt,
+- für jeden Weg einen **konkreten Engpass aus dem Szenario** belegt,
+- pro Weg den **grössten Engpass** markiert und einen **plausiblen ersten Lösungsschritt** vorschlägt,
 - die Brücke zu **mindestens einer DORA-Metrik** schlägt.
 
 ### Diskussionsimpuls (Plenum)
 *Warum die Reihenfolge?* – Ohne **Flow** gibt es nichts, worauf Feedback wirken kann; ohne
 **Feedback** weiss man nicht, was man lernen soll. Der dritte Weg verstärkt die ersten beiden.
+Im Szenario sieht man die Kette deutlich: langsamer Flow (14 Tage) → spätes Feedback (Montag durch
+Kunden) → fehlendes Lernen (Fehler wiederholt sich).
 
 > **Bezug zum Kurs:** Die Three Ways ziehen sich durch alle Tage – Flow (Tag 04 CI, Tag 08
 > Deployment), Feedback (Tag 06/07 Testing, Tag 10/11 Monitoring), Lernen (Workshops & Retros).

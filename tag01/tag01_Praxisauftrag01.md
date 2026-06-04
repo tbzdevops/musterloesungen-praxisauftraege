@@ -1,8 +1,8 @@
-# Musterlösung – 📓 Auftrag 1: CALMS-Framework anwenden
+# Musterlösung – 📓 Auftrag 1: CALMS-Framework anwenden *(Gruppe 1)*
 
-**Format:** Gruppenarbeit (3–4er) + Präsentation
-**Ziel:** Die fünf CALMS-Säulen benennen und auf eine reale Organisation (eigener Betrieb oder
-TechStyle) anwenden.
+**Format:** Gruppenarbeit + Präsentation
+**Ziel:** Die fünf CALMS-Säulen benennen und am konkreten Szenario „Ein Tag bei TechStyle"
+Ist-Zustand und Verbesserungen ableiten.
 
 ---
 
@@ -27,28 +27,41 @@ die Feedback-Schleife, damit Verbesserung sichtbar wird.
 
 ---
 
-## Musterlösung der Gruppenarbeit (Beispiel: TechStyle)
+## Das Szenario (Kurzfassung)
 
-Beispielhafte Analyse des Ist-Zustands und je einer konkreten Verbesserung pro Säule.
+> TechStyle: Online-Shop als ein grosser Codeblock. Deployments macht Admin **Markus** freitags um
+> 18:00 von Hand per FTP. Dev und Ops sitzen in getrennten Abteilungen und schieben sich nach
+> Ausfällen die Schuld zu. Releases nur viermal im Jahr; die Wunschliste liegt seit fünf Monaten
+> „fast fertig". Kein Monitoring – der Black-Friday-Ausfall (3 h) fiel erst über soziale Medien
+> auf. Wie deployt wird, weiss nur Markus; die Doku ist von 2019.
 
-| Säule | Ist-Zustand bei TechStyle | Konkrete Verbesserung |
-|-------|---------------------------|-----------------------|
-| **Culture** | Entwickler und Betrieb arbeiten in Silos; bei Ausfällen wird nach Schuldigen gesucht. | Gemeinsame Verantwortung einführen; Blameless Post-Mortems nach Incidents. |
-| **Automation** | Deployments laufen manuell per Skript, Tests werden von Hand ausgeführt. | CI-Pipeline aufsetzen (ab Tag 04), die bei jedem Push automatisch baut und testet. |
-| **Lean** | Grosse Releases alle paar Monate, viele Features auf einmal. | In kleinen, unabhängigen Inkrementen liefern (MVP-Slicing, vgl. Tag 03). |
-| **Measurement** | Niemand weiss, wie oft deployt wird oder wie lange ein Fix dauert. | DORA-Metriken erheben; später Monitoring/Dashboards (Tag 10/11). |
-| **Sharing** | Wissen steckt in einzelnen Köpfen, kaum Dokumentation. | Gemeinsames Repo-README + Branching-Doku; regelmässige Wissens-Sessions. |
+---
+
+## Musterlösung der Gruppenarbeit
+
+Jede Beobachtung im Szenario lässt sich genau einer Säule zuordnen. Erwartet wird pro Säule ein
+belegter Ist-Zustand **und** eine konkrete Massnahme.
+
+| Säule | Ist-Zustand (Beleg im Szenario) | Konkrete Verbesserung |
+|-------|----------------------------------|-----------------------|
+| **Culture** | Dev und Ops in getrennten Abteilungen; nach Ausfällen Schuldzuweisung („kaputter Code" ↔ „instabiler Server"). | Gemeinsame Verantwortung „you build it, you run it"; **Blameless Post-Mortems** nach jedem Incident statt Schuldsuche. |
+| **Automation** | Deployment freitags von Hand per FTP, Server-Neustart „und hoffen"; keine automatischen Tests. | **CI/CD-Pipeline** (ab Tag 04), die bei jedem Push automatisch baut, testet und deployt – reproduzierbar statt Handarbeit. |
+| **Lean** | Nur 4 grosse Releases/Jahr; Wunschliste seit 5 Monaten „fast fertig" auf einem Branch (Bestand statt Wert). | In **kleinen Inkrementen** liefern (MVP-Slicing, vgl. Tag 03); Feature-Branches kurz halten, häufig mergen. |
+| **Measurement** | Kein Monitoring; der 3-stündige Ausfall wurde erst durch Kunden in sozialen Medien bemerkt. | **Monitoring + Alerting** (Tag 10/11) und Erhebung der **DORA-Metriken** – Probleme messen statt erraten. |
+| **Sharing** | Nur Markus kennt das Deployment; Doku von 2019; bei seiner Krankheit traute sich niemand an ein Release. | Deployment dokumentieren und automatisieren (Bus-Faktor senken); gemeinsames Repo-README/Runbooks; Wissens-Sessions. |
 
 ### Erwartetes Präsentationsergebnis
 Eine Gruppe hat die Aufgabe gut gelöst, wenn sie:
 - alle **fünf Säulen** korrekt benennt und in eigenen Worten erklärt,
-- pro Säule einen **plausiblen Ist-Zustand** beschreibt,
-- pro Säule **eine konkrete, umsetzbare Verbesserung** nennt (keine Allgemeinplätze),
+- jede Säule mit einer **konkreten Stelle aus dem Szenario** belegt (nicht nur allgemein),
+- pro Säule **eine umsetzbare Verbesserung** nennt (keine Allgemeinplätze),
 - erkennt, dass **Culture** die Voraussetzung für die übrigen Säulen ist.
 
 ### Diskussionsimpuls (Plenum)
-*Welche Säule fällt am schwersten?* – In der Praxis meist **Culture**, weil sie Verhalten und
-Organisation betrifft und sich nicht "installieren" lässt.
+*Welche Säule ist bei TechStyle am schwächsten?* – Technisch fällt **Automation** sofort auf
+(FTP-Freitag). Die eigentliche Wurzel ist aber **Culture**: Solange Dev und Ops sich die Schuld
+zuschieben, wird keine Pipeline gebaut und kein Wissen geteilt. Schnellster Hebel mit grosser
+Wirkung: die CI-Pipeline (Automation), weil sie zugleich Measurement und Sharing ermöglicht.
 
 > **Bezug zum Kurs:** Jede Säule taucht wieder auf – Automation (Tag 04 CI), Measurement
 > (Tag 10/11 Monitoring), Sharing (Workshops). CALMS ist die Landkarte für die 20-Wochen-Reise.
