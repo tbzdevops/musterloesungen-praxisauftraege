@@ -1,12 +1,13 @@
 # Tag 01 – Praxis-Musterlösungen
 
-Einführung in DevOps: Setup der Arbeitsumgebung (AWS, GitHub, Kanban).
+Einführung in DevOps: Die Praxis-Aufträge sind **Gruppenarbeiten** zu den zentralen Denkmodellen
+CALMS und The Three Ways. Jede Lösung enthält den passenden **Theorie-Block** plus eine
+ausgearbeitete Beispiel-Lösung der Gruppenarbeit.
 
 | Auftrag | Thema | Lösung |
 |---------|-------|--------|
-| 📓 Auftrag 1 | AWS Academy Login einrichten | [tag01_Praxisauftrag01.md](tag01_Praxisauftrag01.md) |
-| 📓 Auftrag 2 | GitHub Setup & GitHub Classroom | [tag01_Praxisauftrag02.md](tag01_Praxisauftrag02.md) |
-| 📓 Auftrag 3 | Kanban-Board mit GitHub Projects | [tag01_Praxisauftrag03.md](tag01_Praxisauftrag03.md) |
+| 📓 Auftrag 1 | CALMS-Framework anwenden | [tag01_Praxisauftrag01.md](tag01_Praxisauftrag01.md) |
+| 📓 Auftrag 2 | The Three Ways anwenden | [tag01_Praxisauftrag02.md](tag01_Praxisauftrag02.md) |
 
-> Diese Aufträge sind Setup-Aufgaben. Die Musterlösungen beschreiben den korrekten Soll-Zustand
-> und die häufigsten Stolpersteine, damit ihr den Erfolg überprüfen könnt.
+> Das Umgebungs-Setup (AWS, GitHub, Kanban-Board) ist Teil des **Projekt-Blocks** (TechStyle) und
+> liegt im Repo `techstyle` (`DAY_1_COMPLETION.md`), nicht hier.
