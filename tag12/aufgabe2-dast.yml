@@ -1,0 +1,43 @@
+# Auftrag 3 / Workflow 2: DAST mit OWASP ZAP
+# Ablage im DSVPWA-Fork unter: .github/workflows/aufgabe2-dast.yml
+name: Security - DAST (OWASP ZAP)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # DSVPWA im Hintergrund starten; lauscht auf Port 65413
+      - name: Start Web App
+        run: |
+          python dsvpwa.py &
+          sleep 5
+
+      - name: ZAP Baseline DAST Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        env:
+          # Token leeren, damit die Action keine Issues anzulegen versucht (Permission-Fehler)
+          GITHUB_TOKEN: ""
+        with:
+          target: "http://127.0.0.1:65413"
+          fail_action: false       # Report informiert, bricht den Build (im Kurs) nicht hart ab
+          cmd_options: "-m 5"
+          allow_issue_writing: false
