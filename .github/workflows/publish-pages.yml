@@ -61,13 +61,14 @@ jobs:
       - name: Verify install
         run: |
           sleep 90   # warten bis GitHub Pages deployed hat
+          VERSION="${GITHUB_REF_NAME#v}"   # Tag v0.1.2 -> 0.1.2
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install \
             --index-url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/simple/ \
             --extra-index-url https://pypi.org/simple \
-            flaskapp==0.1.0
+            "flaskapp==${VERSION}"
 
       - name: Upload dist as artifact (optional)
         uses: actions/upload-artifact@v4
