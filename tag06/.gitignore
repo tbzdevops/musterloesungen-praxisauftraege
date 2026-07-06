@@ -1,0 +1,14 @@
+# Python build artifacts
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# dumb-pypi Zwischendateien
+package-list.txt
+site/

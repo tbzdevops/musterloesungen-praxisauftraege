@@ -1,0 +1,35 @@
+name: Build & Upload Artifact
+
+# Auftrag 1: Baut das Paket und legt es als temporaeres Workflow-Artefakt ab.
+# Aufbewahrung standardmaessig 90 Tage, nur ueber die Actions-UI sichtbar.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build (sdist + wheel)
+        run: python -m build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dist
+          path: dist/*

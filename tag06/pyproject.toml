@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flaskapp"
+version = "0.1.0"
+description = "Beispiel-Flask-Paket für den eigenen PyPI-Index auf GitHub Pages"
+readme = "README.md"
+authors = [ { name = "TBZ DevOps", email = "devops@example.com" } ]
+dependencies = [ "Flask>=2.2.5" ]
+requires-python = ">=3.9"
+
+[project.scripts]
+run-flask = "flaskapp.main:main"
+
+[project.urls]
+Homepage = "https://github.com/tbzdevops/musterloesungen-praxisauftraege"
+Repository = "https://github.com/tbzdevops/musterloesungen-praxisauftraege"
+
+[tool.setuptools.packages.find]
+where = ["src"]
