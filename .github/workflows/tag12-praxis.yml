@@ -1,0 +1,116 @@
+name: Tag 12 — Praxis-Musterlösungen
+
+# Belegt, dass die DevSecOps-Musterlösungen von Tag 12 wirklich laufen.
+#
+# Die Workflow-Dateien in tag12/auftrag03-ci-security/.github/workflows/ sind Vorlagen
+# fuer den DSVPWA-Fork der Studierenden — GitHub fuehrt nur Workflows im Wurzel-Ordner
+# .github/workflows/ aus. Dieser Workflow bildet die Auftraege hier beweisbar nach:
+#   * validate     — die beiden Workflow-Vorlagen sind gueltiges YAML (Auftrag 3)
+#   * dast-zap     — DSVPWA starten + OWASP ZAP Baseline Scan (Auftrag 2 + Auftrag 3 DAST)
+#   * sast-snyk    — Snyk SCA (Auftrag 1 + Auftrag 3 SAST/SCA); laeuft nur, wenn das
+#                    Secret SNYK_TOKEN gesetzt ist, sonst wird der Job uebersprungen.
+
+on:
+  push:
+    paths:
+      - "tag12/**"
+      - ".github/workflows/tag12-praxis.yml"
+  pull_request:
+    paths:
+      - "tag12/**"
+      - ".github/workflows/tag12-praxis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DSVPWA_REPO: https://github.com/tbzdevops/DSVPWA
+
+jobs:
+  validate:
+    name: Auftrag 3 — Workflow-Vorlagen prüfen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Vorlagen sind gültiges YAML
+        run: |
+          python - <<'PY'
+          import sys, yaml, pathlib
+          base = pathlib.Path("tag12/auftrag03-ci-security/.github/workflows")
+          files = ["aufgabe1-sast-sca.yml", "aufgabe2-dast.yml"]
+          for f in files:
+              p = base / f
+              yaml.safe_load(p.read_text())
+              print(f"OK  {p}")
+          # Pflicht-Bausteine gegenprüfen
+          sast = (base / "aufgabe1-sast-sca.yml").read_text()
+          dast = (base / "aufgabe2-dast.yml").read_text()
+          assert "snyk/actions/python@master" in sast, "Snyk-SCA-Action fehlt"
+          assert "SNYK_TOKEN" in sast, "SNYK_TOKEN-Secret fehlt"
+          assert "zaproxy/action-baseline" in dast, "ZAP-Baseline-Action fehlt"
+          print("OK  Pflicht-Bausteine vorhanden")
+          PY
+
+  dast-zap:
+    name: Auftrag 2/3 — DAST (OWASP ZAP)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: DSVPWA klonen und starten
+        run: |
+          git clone --depth 1 "$DSVPWA_REPO" dsvpwa-app
+          cd dsvpwa-app
+          # DSVPWA laeuft mit der Python-Standardbibliothek, kein pip install noetig
+          python dsvpwa.py --host 0.0.0.0 &
+          sleep 5
+          curl -sf -o /dev/null -w "DSVPWA erreichbar: HTTP %{http_code}\n" http://127.0.0.1:65413/
+      - name: OWASP ZAP Baseline Scan
+        run: |
+          # --network host: der ZAP-Container erreicht die auf dem Runner laufende App
+          docker run --network host -v "$PWD":/zap/wrk/:rw \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://127.0.0.1:65413 -m 2 -I
+          # -I / exit 0: der Baseline-Scan informiert, bricht den Build im Kurs nicht hart ab
+
+  sast-snyk:
+    name: Auftrag 1/3 — SAST/SCA (Snyk)
+    runs-on: ubuntu-latest
+    steps:
+      - name: SNYK_TOKEN vorhanden?
+        id: guard
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          if [ -n "$SNYK_TOKEN" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::SNYK_TOKEN nicht gesetzt — Snyk-Scan wird übersprungen (Vorlage bleibt gültig)."
+          fi
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.run == 'true'
+      - name: DSVPWA klonen
+        if: steps.guard.outputs.run == 'true'
+        run: git clone --depth 1 "$DSVPWA_REPO" dsvpwa-app
+      - uses: actions/setup-python@v5
+        if: steps.guard.outputs.run == 'true'
+        with:
+          python-version: "3.11"
+      - name: Snyk Open Source (SCA)
+        if: steps.guard.outputs.run == 'true'
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --file=dsvpwa-app/requirements.txt --severity-threshold=high

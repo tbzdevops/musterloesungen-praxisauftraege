@@ -21,7 +21,7 @@ DevSecOps-Pipeline.
 ## 2. Workflow 1 – SAST + SCA mit Snyk
 
 Datei: **`.github/workflows/aufgabe1-sast-sca.yml`** (vollständige Datei liegt als
-[aufgabe1-sast-sca.yml](aufgabe1-sast-sca.yml) bei).
+[aufgabe1-sast-sca.yml](auftrag03-ci-security/.github/workflows/aufgabe1-sast-sca.yml) bei).
 
 Kernpunkte:
 
@@ -63,7 +63,7 @@ jobs:
 ## 3. Workflow 2 – DAST mit OWASP ZAP
 
 Datei: **`.github/workflows/aufgabe2-dast.yml`** (vollständige Datei liegt als
-[aufgabe2-dast.yml](aufgabe2-dast.yml) bei).
+[aufgabe2-dast.yml](auftrag03-ci-security/.github/workflows/aufgabe2-dast.yml) bei).
 
 Kernidee: App **im Runner** starten, dann ZAP gegen `localhost` laufen lassen.
 

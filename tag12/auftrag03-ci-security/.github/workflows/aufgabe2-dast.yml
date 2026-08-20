@@ -22,10 +22,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      # DSVPWA im Hintergrund starten; lauscht auf Port 65413
+      # DSVPWA laeuft allein mit der Python-Standardbibliothek - kein pip install noetig.
+      # (requirements.txt enthaelt nur alte, gepinnte Demo-Pakete fuer den SCA-Scan aus Auftrag 1.)
       - name: Start Web App
         run: |
           python dsvpwa.py &
