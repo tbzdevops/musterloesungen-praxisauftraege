@@ -1,0 +1,62 @@
+name: Tag 15 — Praxis-Musterlösungen
+
+# Belegt, dass die Docker-Musterlösungen von Tag 15 wirklich laufen.
+#   * uebung02 — eigenes Image bauen, Container starten, HTTP-Antwort prüfen
+#   * uebung03 — docker compose Stack (web + redis) starten und beide prüfen
+# Übung 1 (docker run hello-world) ist eine reine CLI-Kennenlern-Übung.
+# Docker und Compose sind auf ubuntu-latest-Runnern vorinstalliert.
+
+on:
+  push:
+    paths:
+      - "tag15/**"
+      - ".github/workflows/tag15-praxis.yml"
+  pull_request:
+    paths:
+      - "tag15/**"
+      - ".github/workflows/tag15-praxis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  uebung02-eigenes-image:
+    name: Übung 2 — Eigenes Container-Image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tag15/uebung02-eigenes-image
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image bauen
+        run: docker build -t hello-docker:1.0 .
+      - name: Container starten und testen
+        run: |
+          docker run -d -p 8080:8080 --name hello-app hello-docker:1.0
+          sleep 3
+          BODY=$(curl -sf http://localhost:8080/)
+          echo "Antwort: $BODY"
+          echo "$BODY" | grep -q "Hello Docker!"
+          docker stop hello-app
+
+  uebung03-compose:
+    name: Übung 3 — Docker Compose (web + redis)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tag15/uebung03-compose
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stack starten
+        run: docker compose up -d --build
+      - name: Web-Service prüfen
+        run: |
+          sleep 3
+          curl -sf http://localhost:8080/ | grep -q "Hello Docker!"
+      - name: Redis-Service prüfen (PING -> PONG)
+        run: |
+          docker compose exec -T redis redis-cli ping | grep -q "PONG"
+      - name: Aufräumen
+        if: always()
+        run: docker compose down
