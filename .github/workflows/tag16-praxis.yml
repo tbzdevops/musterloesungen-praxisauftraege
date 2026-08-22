@@ -1,0 +1,67 @@
+name: Tag 16 — Praxis-Musterlösungen
+
+# Belegt die Container-Automatisierung von Tag 16.
+#   * uebung01-ci-build — Image bauen, Container starten, HTTP-Antwort prüfen (beweisbar grün)
+#   * validate-aws      — die ECR-/ECS-Vorlagen (Übung 2+3) sind gültiges YAML
+# Übung 2 und 3 pushen/deployen nach AWS und brauchen AWS-Secrets — sie laufen im
+# Fork der Studierenden, hier werden nur die Vorlagen validiert.
+
+on:
+  push:
+    paths:
+      - "tag16/**"
+      - ".github/workflows/tag16-praxis.yml"
+  pull_request:
+    paths:
+      - "tag16/**"
+      - ".github/workflows/tag16-praxis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  uebung01-ci-build:
+    name: Übung 1 — CI-Build (Image + Test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tag16/uebung01-ci-build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image bauen
+        run: docker build -t hello-docker-ci:latest .
+      - name: Container starten und testen
+        run: |
+          docker run -d --name test-container -p 8080:8080 hello-docker-ci:latest
+          sleep 5
+          BODY=$(curl -sf http://localhost:8080/)
+          echo "Antwort: $BODY"
+          echo "$BODY" | grep -q "Hello, World!"
+          docker stop test-container
+
+  validate-aws-workflows:
+    name: Übung 2/3 — AWS-Workflows (YAML)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+      - name: Vorlagen sind gültiges YAML
+        run: |
+          python - <<'PY'
+          import yaml, pathlib
+          base = pathlib.Path("tag16/uebung01-ci-build/.github/workflows")
+          for name in ["aufgabe1.yml", "aufgabe2.yml", "aufgabe3.yml"]:
+              wf = yaml.safe_load((base / name).read_text())
+              assert "jobs" in wf, f"{name}: jobs fehlt"
+              print("OK", name)
+          # Pflicht-Bausteine der AWS-Vorlagen
+          ecr = (base / "aufgabe2.yml").read_text()
+          ecs = (base / "aufgabe3.yml").read_text()
+          assert "amazon-ecr-login" in ecr, "ECR-Login fehlt in aufgabe2"
+          assert "amazon-ecs-deploy-task-definition" in ecs, "ECS-Deploy fehlt in aufgabe3"
+          print("OK  AWS-Bausteine vorhanden")
+          PY
