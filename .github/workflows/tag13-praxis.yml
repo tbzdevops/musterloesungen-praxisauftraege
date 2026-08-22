@@ -1,0 +1,69 @@
+name: Tag 13 — Praxis-Musterlösungen
+
+# Belegt, dass die AI-in-DevOps-Musterlösungen von Tag 13 laufen.
+#   * auftrag01 — validate_email + Tests (pytest grün)
+#   * auftrag02 — validate_discount_code gegen die Spec + Tests (pytest grün)
+#   * auftrag03 — der AI-Review-Workflow ist gültiges YAML (Vorlage fürs eigene Repo)
+# Auftrag 4 (Prompt Injection) ist eine reine Analyse-/Diskussionsübung ohne Code.
+
+on:
+  push:
+    paths:
+      - "tag13/**"
+      - ".github/workflows/tag13-praxis.yml"
+  pull_request:
+    paths:
+      - "tag13/**"
+      - ".github/workflows/tag13-praxis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  auftrag01-ai-assisted:
+    name: Auftrag 1 — AI-Assisted (validate_email)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tag13/auftrag01-ai-assisted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  auftrag02-spec-adr:
+    name: Auftrag 2 — Spec-Driven (validate_discount_code)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tag13/auftrag02-spec-adr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  auftrag03-validate:
+    name: Auftrag 3 — AI-Review-Workflow (YAML)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+      - name: Vorlage ist gültiges YAML
+        run: |
+          python - <<'PY'
+          import yaml, pathlib
+          p = pathlib.Path("tag13/auftrag03-ai-cicd/.github/workflows/ai-review.yml")
+          wf = yaml.safe_load(p.read_text())
+          assert "jobs" in wf and "ai-review" in wf["jobs"], "Job ai-review fehlt"
+          print("OK", p)
+          PY
