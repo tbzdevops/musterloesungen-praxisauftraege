@@ -4,7 +4,7 @@ name: Security - SAST & SCA (Snyk)
 
 on:
   push:
-  pull_request:
+    branches: [ "main" ]   # im eigenen Fork ist main der Default-Branch
   workflow_dispatch:
 
 permissions:

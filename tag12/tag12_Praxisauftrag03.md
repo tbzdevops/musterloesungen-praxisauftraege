@@ -1,7 +1,7 @@
 # Musterlösung – Auftrag 3: Security-Scans in die CI/CD-Pipeline einbauen
 
 **Ziel:** Die Erkenntnisse aus Auftrag 1 (SAST/SCA) und Auftrag 2 (DAST) in **GitHub Actions**
-automatisieren. Bei jedem Push/Pull-Request laufen die Security-Checks – eine kleine
+automatisieren. Bei jedem Push auf `main` laufen die Security-Checks – eine kleine
 DevSecOps-Pipeline.
 
 ---
@@ -21,14 +21,15 @@ DevSecOps-Pipeline.
 ## 2. Workflow 1 – SAST + SCA mit Snyk
 
 Datei: **`.github/workflows/aufgabe1-sast-sca.yml`** (vollständige Datei liegt als
-[aufgabe1-sast-sca.yml](auftrag03-ci-security/.github/workflows/aufgabe1-sast-sca.yml) bei).
+[aufgabe1-sast-sca.yml](../.github/workflows/aufgabe1-sast-sca.yml) bei).
 
 Kernpunkte:
 
 ```yaml
 on:
   push:
-  pull_request:
+    branches: [ "main" ]   # im eigenen Fork ist main der Default-Branch
+  workflow_dispatch:
 
 jobs:
   snyk:
@@ -63,7 +64,7 @@ jobs:
 ## 3. Workflow 2 – DAST mit OWASP ZAP
 
 Datei: **`.github/workflows/aufgabe2-dast.yml`** (vollständige Datei liegt als
-[aufgabe2-dast.yml](auftrag03-ci-security/.github/workflows/aufgabe2-dast.yml) bei).
+[aufgabe2-dast.yml](../.github/workflows/aufgabe2-dast.yml) bei).
 
 Kernidee: App **im Runner** starten, dann ZAP gegen `localhost` laufen lassen.
 

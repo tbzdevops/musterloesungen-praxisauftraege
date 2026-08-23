@@ -2,23 +2,19 @@ name: Tag 12 — Praxis-Musterlösungen
 
 # Belegt, dass die DevSecOps-Musterlösungen von Tag 12 wirklich laufen.
 #
-# Die Workflow-Dateien in tag12/auftrag03-ci-security/.github/workflows/ sind Vorlagen
-# fuer den DSVPWA-Fork der Studierenden — GitHub fuehrt nur Workflows im Wurzel-Ordner
-# .github/workflows/ aus. Dieser Workflow bildet die Auftraege hier beweisbar nach:
-#   * validate     — die beiden Workflow-Vorlagen sind gueltiges YAML (Auftrag 3)
+# aufgabe1-sast-sca.yml und aufgabe2-dast.yml liegen hier im Wurzel-Ordner
+# .github/workflows/ — genau dort, wo sie im DSVPWA-Fork der Studierenden hingehoeren.
+# Sie sind auf 'branches: [main]' begrenzt und laufen deshalb auf diesem Loesungs-Branch
+# nicht an (sie brauchen den DSVPWA-Code und AWS-/Snyk-Secrets). Dieser Workflow bildet
+# die Auftraege hier beweisbar nach:
+#   * validate     — die beiden Workflow-Dateien sind gueltiges YAML (Auftrag 3)
 #   * dast-zap     — DSVPWA starten + OWASP ZAP Baseline Scan (Auftrag 2 + Auftrag 3 DAST)
 #   * sast-snyk    — Snyk SCA (Auftrag 1 + Auftrag 3 SAST/SCA); laeuft nur, wenn das
 #                    Secret SNYK_TOKEN gesetzt ist, sonst wird der Job uebersprungen.
 
 on:
   push:
-    paths:
-      - "tag12/**"
-      - ".github/workflows/tag12-praxis.yml"
   pull_request:
-    paths:
-      - "tag12/**"
-      - ".github/workflows/tag12-praxis.yml"
   workflow_dispatch:
 
 permissions:
@@ -29,7 +25,7 @@ env:
 
 jobs:
   validate:
-    name: Auftrag 3 — Workflow-Vorlagen prüfen
+    name: Auftrag 3 — Workflows prüfen
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,11 +34,11 @@ jobs:
           python-version: "3.11"
       - name: Install PyYAML
         run: pip install pyyaml
-      - name: Vorlagen sind gültiges YAML
+      - name: Workflows sind gültiges YAML
         run: |
           python - <<'PY'
           import sys, yaml, pathlib
-          base = pathlib.Path("tag12/auftrag03-ci-security/.github/workflows")
+          base = pathlib.Path(".github/workflows")
           files = ["aufgabe1-sast-sca.yml", "aufgabe2-dast.yml"]
           for f in files:
               p = base / f
@@ -94,7 +90,7 @@ jobs:
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::SNYK_TOKEN nicht gesetzt — Snyk-Scan wird übersprungen (Vorlage bleibt gültig)."
+            echo "::notice::SNYK_TOKEN nicht gesetzt — Snyk-Scan wird übersprungen (Workflow bleibt gültig)."
           fi
       - uses: actions/checkout@v4
         if: steps.guard.outputs.run == 'true'

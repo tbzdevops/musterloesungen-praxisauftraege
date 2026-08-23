@@ -12,34 +12,36 @@ Python Web Application): <https://github.com/tbzdevops/DSVPWA>
 |---------|-------|-----------|------------------|
 | 📓 Auftrag 1 | Statische Code-Analyse mit Snyk (SAST + SCA) | [tag12_Praxisauftrag01.md](tag12_Praxisauftrag01.md) | lokal (`snyk` CLI) |
 | 📓 Auftrag 2 | Dynamischer Sicherheitstest mit OWASP ZAP (DAST) | [tag12_Praxisauftrag02.md](tag12_Praxisauftrag02.md) | lokal (`docker` + ZAP) |
-| 📓 Auftrag 3 | Security-Scans in die CI/CD-Pipeline einbauen | [tag12_Praxisauftrag03.md](tag12_Praxisauftrag03.md) | [auftrag03-ci-security/](auftrag03-ci-security/) |
+| 📓 Auftrag 3 | Security-Scans in die CI/CD-Pipeline einbauen | [tag12_Praxisauftrag03.md](tag12_Praxisauftrag03.md) | [.github/workflows/](../.github/workflows/) |
 
 ---
 
 ## Aufbau
 
 Auftrag 1 und 2 sind **lokale** Übungen an der geforkten DSVPWA-App (Snyk-CLI bzw. OWASP ZAP im
-Docker-Container). Auftrag 3 überführt beides in **GitHub-Actions-Workflows**. Der Ordner
-`auftrag03-ci-security/` ist deshalb ein **Mini-Repository** mit den Workflow-Dateien an genau der
-Stelle, an die sie im DSVPWA-Fork der Studierenden gehören:
+Docker-Container). Auftrag 3 überführt beides in **GitHub-Actions-Workflows**. Die beiden
+Workflow-Dateien liegen deshalb im Wurzel-Ordner `.github/workflows/` — genau dort, wo sie im
+DSVPWA-Fork der Studierenden hingehören:
 
 ```
+.github/workflows/
+├── aufgabe1-sast-sca.yml                           # Auftrag 3: Snyk SCA + Snyk Code (SAST)
+├── aufgabe2-dast.yml                               # Auftrag 3: App starten + OWASP ZAP Baseline
+└── tag12-praxis.yml                                # bildet die Aufträge hier beweisbar nach
 tag12/
+├── README.md                                       # diese Übersicht
 ├── verify.sh                                       # lokale Selbstkontrolle
 ├── tag12_Praxisauftrag01.md                        # Musterlösung Auftrag 1 (SAST/SCA)
 ├── tag12_Praxisauftrag02.md                        # Musterlösung Auftrag 2 (DAST)
-├── tag12_Praxisauftrag03.md                        # Musterlösung Auftrag 3 (CI/CD)
-└── auftrag03-ci-security/
-    └── .github/workflows/
-        ├── aufgabe1-sast-sca.yml                   # Snyk SCA + Snyk Code (SAST)
-        └── aufgabe2-dast.yml                       # App starten + OWASP ZAP Baseline (DAST)
+└── tag12_Praxisauftrag03.md                        # Musterlösung Auftrag 3 (CI/CD)
 ```
 
-> **Hinweis:** GitHub führt nur Workflows aus dem Wurzel-Ordner `.github/workflows/` eines
-> Repositories aus. Die Workflow-Dateien im Auftrags-Ordner sind deshalb **Vorlagen** für den
-> DSVPWA-Fork der Studierenden. Damit die Musterlösungen hier trotzdem beweisbar grün laufen,
-> bildet [`.github/workflows/tag12-praxis.yml`](../.github/workflows/tag12-praxis.yml) im Wurzel
-> des Repos die Aufträge als eigene Jobs nach (DSVPWA klonen, starten, ZAP-Scan; Snyk optional).
+> **Hinweis:** `aufgabe1-sast-sca.yml` und `aufgabe2-dast.yml` gehören in den **DSVPWA-Fork** —
+> sie brauchen dessen Code und ein `SNYK_TOKEN`. Damit sie auf diesem Musterlösungs-Branch nicht
+> ins Leere laufen, sind sie auf `branches: [ "main" ]` begrenzt; im eigenen Fork ist `main` der
+> Default-Branch und sie starten bei jedem Push. Damit die Musterlösungen hier trotzdem beweisbar
+> grün laufen, bildet [`.github/workflows/tag12-praxis.yml`](../.github/workflows/tag12-praxis.yml)
+> die Aufträge als eigene Jobs nach (DSVPWA klonen, starten, ZAP-Scan; Snyk optional).
 
 ---
 
@@ -53,7 +55,7 @@ bash tag12/verify.sh 3      # nur Auftrag 3
 ```
 
 Das Skript prüft ohne externe Accounts, dass die Musterlösungs-Dokumente und die
-Workflow-Vorlagen vorhanden, gültig (YAML) und inhaltlich vollständig sind (Snyk-Action,
+Workflow-Dateien vorhanden, gültig (YAML) und inhaltlich vollständig sind (Snyk-Action,
 `SNYK_TOKEN`, ZAP-Baseline-Action …). Erwartete Ausgabe:
 
 ```
@@ -66,14 +68,14 @@ Workflow-Vorlagen vorhanden, gültig (YAML) und inhaltlich vollständig sind (Sn
 Nach einem Push auf dieses Repo läuft `tag12-praxis.yml`. Im Reiter **Actions** erscheinen:
 
 ```
-Auftrag 3 — Workflow-Vorlagen prüfen     (YAML-Validierung)
+Auftrag 3 — Workflows prüfen             (YAML-Validierung)
 Auftrag 2/3 — DAST (OWASP ZAP)           (DSVPWA starten + ZAP Baseline Scan)
 Auftrag 1/3 — SAST/SCA (Snyk)            (läuft nur, wenn Secret SNYK_TOKEN gesetzt ist)
 ```
 
 Der **DAST-Job läuft ohne Secret grün** — er klont DSVPWA, startet die App im Runner und scannt
 sie mit OWASP ZAP. Der **Snyk-Job** wird übersprungen, solange kein `SNYK_TOKEN`-Secret im Repo
-hinterlegt ist (die Vorlage bleibt trotzdem gültig).
+hinterlegt ist (der Workflow bleibt trotzdem gültig).
 
 ---
 

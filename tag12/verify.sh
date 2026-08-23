@@ -5,14 +5,14 @@
 #   bash tag12/verify.sh 3      # nur Auftrag 3
 #
 # Prüft, was ohne externe Accounts prüfbar ist: dass die Musterlösungs-Dokumente und die
-# Workflow-Vorlagen vorhanden, gültig und inhaltlich vollständig sind. Snyk (Account/Token)
+# Workflow-Dateien vorhanden, gültig und inhaltlich vollständig sind. Snyk (Account/Token)
 # und ein echter ZAP-Scan (Docker) laufen in GitHub Actions — siehe
 # .github/workflows/tag12-praxis.yml.
 
 set -uo pipefail
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WF_DIR="$BASE_DIR/auftrag03-ci-security/.github/workflows"
+WF_DIR="$BASE_DIR/../.github/workflows"
 PASS=0
 FAIL=0
 
