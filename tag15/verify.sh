@@ -10,6 +10,7 @@
 set -uo pipefail
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$BASE_DIR/.." && pwd)"
 PASS=0
 FAIL=0
 
@@ -29,7 +30,7 @@ verify_uebung1() {
 
 verify_uebung2() {
   head1 "Übung 2 — Eigenes Container-Image"
-  local dir="$BASE_DIR/uebung02-eigenes-image"
+  local dir="$REPO_DIR"
   [ -f "$dir/app.py" ]     && ok "app.py vorhanden"     || nok "app.py fehlt"
   [ -f "$dir/Dockerfile" ] && ok "Dockerfile vorhanden" || nok "Dockerfile fehlt"
   if docker_up; then
@@ -57,7 +58,7 @@ verify_uebung2() {
 
 verify_uebung3() {
   head1 "Übung 3 — Docker Compose (web + redis)"
-  local dir="$BASE_DIR/uebung03-compose"
+  local dir="$REPO_DIR"
   local compose="$dir/docker-compose.yml"
   [ -f "$compose" ] && ok "docker-compose.yml vorhanden" || { nok "Compose-Datei fehlt"; return; }
   if command -v python3 >/dev/null 2>&1 && python3 -c "import yaml" >/dev/null 2>&1; then

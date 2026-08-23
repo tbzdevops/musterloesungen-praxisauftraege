@@ -3,18 +3,13 @@ name: Tag 15 — Praxis-Musterlösungen
 # Belegt, dass die Docker-Musterlösungen von Tag 15 wirklich laufen.
 #   * uebung02 — eigenes Image bauen, Container starten, HTTP-Antwort prüfen
 #   * uebung03 — docker compose Stack (web + redis) starten und beide prüfen
+# Dockerfile, app.py und docker-compose.yml liegen im Wurzel-Verzeichnis, genau
+# so wie im eigenen Repo der Studierenden.
 # Übung 1 (docker run hello-world) ist eine reine CLI-Kennenlern-Übung.
 # Docker und Compose sind auf ubuntu-latest-Runnern vorinstalliert.
 
 on:
   push:
-    paths:
-      - "tag15/**"
-      - ".github/workflows/tag15-praxis.yml"
-  pull_request:
-    paths:
-      - "tag15/**"
-      - ".github/workflows/tag15-praxis.yml"
   workflow_dispatch:
 
 permissions:
@@ -24,9 +19,6 @@ jobs:
   uebung02-eigenes-image:
     name: Übung 2 — Eigenes Container-Image
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tag15/uebung02-eigenes-image
     steps:
       - uses: actions/checkout@v4
       - name: Image bauen
@@ -43,9 +35,6 @@ jobs:
   uebung03-compose:
     name: Übung 3 — Docker Compose (web + redis)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tag15/uebung03-compose
     steps:
       - uses: actions/checkout@v4
       - name: Stack starten

@@ -7,24 +7,26 @@ aufeinander auf; alles läuft lokal, ohne kostenpflichtige Cloud-Dienste.
 | Übung | Thema | Erklärung | Lauffähiger Code |
 |-------|-------|-----------|------------------|
 | 📓 Übung 1 | Hallo Docker! (erster Container) | [tag15_Praxisauftrag01.md](tag15_Praxisauftrag01.md) | reine CLI-Übung |
-| 📓 Übung 2 | Eigenes Container-Image bauen | [tag15_Praxisauftrag02.md](tag15_Praxisauftrag02.md) | [uebung02-eigenes-image/](uebung02-eigenes-image/) |
-| 📓 Übung 3 | Microservices mit Docker Compose | [tag15_Praxisauftrag03.md](tag15_Praxisauftrag03.md) | [uebung03-compose/](uebung03-compose/) |
+| 📓 Übung 2 | Eigenes Container-Image bauen | [tag15_Praxisauftrag02.md](tag15_Praxisauftrag02.md) | [Dockerfile](../Dockerfile) + [app.py](../app.py) |
+| 📓 Übung 3 | Microservices mit Docker Compose | [tag15_Praxisauftrag03.md](tag15_Praxisauftrag03.md) | [docker-compose.yml](../docker-compose.yml) |
 
 ---
 
 ## Aufbau
 
+Die Lösungsdateien liegen **genau dort, wo sie im eigenen Repo auch liegen müssen** — im
+Wurzel-Verzeichnis. Übung 3 baut auf dem Image aus Übung 2 auf und nutzt dasselbe
+`Dockerfile` und `app.py`:
+
 ```
-tag15/
-├── verify.sh                              # lokale Selbstkontrolle
-├── uebung02-eigenes-image/
-│   ├── app.py                             # Hello-Docker-Webserver (stdlib, Port 8080)
-│   └── Dockerfile                         # python:3.11-slim
-└── uebung03-compose/
-    ├── app.py
-    ├── Dockerfile
-    └── docker-compose.yml                 # web + redis
+app.py                                     # Übung 2: Hello-Docker-Webserver (stdlib, Port 8080)
+Dockerfile                                 # Übung 2: python:3.11-slim
+docker-compose.yml                         # Übung 3: web + redis
 .github/workflows/tag15-praxis.yml         # baut/startet/testet Übung 2+3 beweisbar
+tag15/
+├── README.md                              # diese Übersicht
+├── verify.sh                              # lokale Selbstkontrolle
+└── tag15_Praxisauftrag0X.md               # die drei Musterlösungs-Dokumente
 ```
 
 ---
@@ -43,7 +45,7 @@ testet die HTTP-Antwort bzw. den Compose-Stack. Ohne Docker werden die Build-/Ru
 übersprungen (sie laufen dann in GitHub Actions). Erwartet (mit Docker):
 
 ```
-✅ Erfüllt:    9
+✅ Erfüllt:    10
 ❌ Fehlen:     0
 ```
 

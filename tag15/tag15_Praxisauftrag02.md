@@ -3,7 +3,7 @@
 **Ziel:** Eine kleine Python-Webanwendung als eigenes Docker-Image bauen und als Container
 starten.
 
-Lauffähiger Code: [uebung02-eigenes-image/](uebung02-eigenes-image/)
+Lauffähiger Code: [app.py](../app.py), [Dockerfile](../Dockerfile)
 
 ---
 
@@ -49,7 +49,6 @@ CMD ["python", "app.py"]
 ## 3. Bauen, starten, testen
 
 ```bash
-cd uebung02-eigenes-image
 docker build -t hello-docker:1.0 .          # Image bauen
 docker images                                # hello-docker:1.0 taucht auf
 docker run -d -p 8080:8080 --name hello-app hello-docker:1.0

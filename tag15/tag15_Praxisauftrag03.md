@@ -2,7 +2,7 @@
 
 **Ziel:** Zwei Container (Web + Redis) mit **Docker Compose** als Einheit definieren und starten.
 
-Lauffähiger Code: [uebung03-compose/](uebung03-compose/)
+Lauffähiger Code: [docker-compose.yml](../docker-compose.yml)
 
 ---
 
@@ -29,7 +29,6 @@ services:
 ## 2. Starten und prüfen
 
 ```bash
-cd uebung03-compose
 docker compose up -d --build          # beide Services starten (web wird gebaut)
 docker ps                              # zwei Container: ...-web-1 und ...-redis-1
 
