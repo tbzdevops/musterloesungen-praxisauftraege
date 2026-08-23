@@ -3,7 +3,7 @@
 **Ziel:** Nach dem Image-Push automatisch den ECS-Service aktualisieren — durchgängig vom
 Code-Push bis zum laufenden Container in der Cloud.
 
-Workflow-Vorlage: [uebung01-ci-build/.github/workflows/aufgabe3.yml](uebung01-ci-build/.github/workflows/aufgabe3.yml)
+Workflow: [.github/workflows/aufgabe3.yml](../.github/workflows/aufgabe3.yml)
 
 ---
 

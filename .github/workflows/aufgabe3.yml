@@ -1,5 +1,4 @@
 # Übung 3: Continuous Deployment auf AWS ECS
-# Ablage im eigenen Repo unter: .github/workflows/aufgabe3.yml
 # Baut + pusht das Image nach ECR und aktualisiert danach den ECS-Service.
 # Zusätzliche Secrets/Variablen: ECS_CLUSTER, ECS_SERVICE, ECS_TASK_DEFINITION (Familie),
 #   CONTAINER_NAME

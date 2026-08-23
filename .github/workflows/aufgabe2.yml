@@ -1,5 +1,4 @@
 # Übung 2: Image in die AWS-Registry (ECR) pushen
-# Ablage im eigenen Repo unter: .github/workflows/aufgabe2.yml
 # Benötigt Repository-Secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
 #   AWS_REGION, AWS_ACCOUNT_ID, ECR_REPOSITORY
 name: CI/CD Pipeline

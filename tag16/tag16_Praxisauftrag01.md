@@ -3,7 +3,7 @@
 **Ziel:** Eine CI-Pipeline, die bei jedem Push das Docker-Image der App baut und mit einem
 Container-Test prüft.
 
-Lauffähiger Code: [uebung01-ci-build/](uebung01-ci-build/)
+Lauffähiger Code: [app.py](../app.py), [Dockerfile](../Dockerfile), [.github/workflows/aufgabe1.yml](../.github/workflows/aufgabe1.yml)
 
 ---
 

@@ -1,5 +1,4 @@
 # Übung 1: CI-Build für ein Container-Image
-# Ablage im eigenen Repo unter: .github/workflows/aufgabe1.yml
 name: CI Build
 
 on:

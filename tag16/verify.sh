@@ -4,13 +4,15 @@
 #   bash tag16/verify.sh        # alle Übungen
 #   bash tag16/verify.sh 1      # nur Übung 1
 #
+# Die Lösungsdateien liegen im Wurzel-Verzeichnis bzw. in .github/workflows/.
 # Prüft dieselben Schritte wie .github/workflows/tag16-praxis.yml. Ohne laufenden
 # Docker-Daemon wird der Build/Run von Übung 1 übersprungen (läuft dann in CI).
 
 set -uo pipefail
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WF_DIR="$BASE_DIR/uebung01-ci-build/.github/workflows"
+REPO_DIR="$(cd "$BASE_DIR/.." && pwd)"
+WF_DIR="$REPO_DIR/.github/workflows"
 PASS=0
 FAIL=0
 
@@ -33,7 +35,7 @@ yaml_valid() {
 
 verify_uebung1() {
   head1 "Übung 1 — CI-Build (Image + Test)"
-  local dir="$BASE_DIR/uebung01-ci-build"
+  local dir="$REPO_DIR"
   [ -f "$dir/app.py" ]           && ok "app.py (Flask) vorhanden"   || nok "app.py fehlt"
   [ -f "$dir/requirements.txt" ] && ok "requirements.txt vorhanden" || nok "requirements.txt fehlt"
   [ -f "$dir/Dockerfile" ]       && ok "Dockerfile vorhanden"       || nok "Dockerfile fehlt"
@@ -56,19 +58,19 @@ verify_uebung1() {
 }
 
 verify_uebung2() {
-  head1 "Übung 2 — Push zu AWS ECR (Vorlage)"
+  head1 "Übung 2 — Push zu AWS ECR"
   yaml_valid "$WF_DIR/aufgabe2.yml" "aufgabe2.yml ist gültiges YAML"
   grep -q 'amazon-ecr-login' "$WF_DIR/aufgabe2.yml" 2>/dev/null \
-    && ok "Vorlage nutzt amazon-ecr-login" || nok "ECR-Login fehlt"
+    && ok "Workflow nutzt amazon-ecr-login" || nok "ECR-Login fehlt"
   grep -q 'push: true' "$WF_DIR/aufgabe2.yml" 2>/dev/null \
-    && ok "Vorlage pusht das Image (push: true)" || nok "push: true fehlt"
+    && ok "Workflow pusht das Image (push: true)" || nok "push: true fehlt"
 }
 
 verify_uebung3() {
-  head1 "Übung 3 — Deployment auf AWS ECS (Vorlage)"
+  head1 "Übung 3 — Deployment auf AWS ECS"
   yaml_valid "$WF_DIR/aufgabe3.yml" "aufgabe3.yml ist gültiges YAML"
   grep -q 'amazon-ecs-deploy-task-definition' "$WF_DIR/aufgabe3.yml" 2>/dev/null \
-    && ok "Vorlage deployt auf ECS" || nok "ECS-Deploy-Schritt fehlt"
+    && ok "Workflow deployt auf ECS" || nok "ECS-Deploy-Schritt fehlt"
 }
 
 main() {

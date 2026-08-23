@@ -2,19 +2,14 @@ name: Tag 16 — Praxis-Musterlösungen
 
 # Belegt die Container-Automatisierung von Tag 16.
 #   * uebung01-ci-build — Image bauen, Container starten, HTTP-Antwort prüfen (beweisbar grün)
-#   * validate-aws      — die ECR-/ECS-Vorlagen (Übung 2+3) sind gültiges YAML
-# Übung 2 und 3 pushen/deployen nach AWS und brauchen AWS-Secrets — sie laufen im
-# Fork der Studierenden, hier werden nur die Vorlagen validiert.
+#   * validate-aws      — die ECR-/ECS-Workflows (Übung 2+3) sind gültiges YAML
+# aufgabe1/2/3.yml liegen im Wurzel-Ordner .github/workflows/, genau so wie im
+# eigenen Repo der Studierenden. Sie sind auf 'branches: [main]' begrenzt und
+# laufen deshalb auf diesem Loesungs-Branch nicht an — Uebung 2 und 3 brauchen
+# ausserdem AWS-Secrets. Dieser Workflow baut/testet Uebung 1 hier beweisbar.
 
 on:
   push:
-    paths:
-      - "tag16/**"
-      - ".github/workflows/tag16-praxis.yml"
-  pull_request:
-    paths:
-      - "tag16/**"
-      - ".github/workflows/tag16-praxis.yml"
   workflow_dispatch:
 
 permissions:
@@ -24,9 +19,6 @@ jobs:
   uebung01-ci-build:
     name: Übung 1 — CI-Build (Image + Test)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tag16/uebung01-ci-build
     steps:
       - uses: actions/checkout@v4
       - name: Image bauen
@@ -49,16 +41,16 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install pyyaml
-      - name: Vorlagen sind gültiges YAML
+      - name: Workflows sind gültiges YAML
         run: |
           python - <<'PY'
           import yaml, pathlib
-          base = pathlib.Path("tag16/uebung01-ci-build/.github/workflows")
+          base = pathlib.Path(".github/workflows")
           for name in ["aufgabe1.yml", "aufgabe2.yml", "aufgabe3.yml"]:
               wf = yaml.safe_load((base / name).read_text())
               assert "jobs" in wf, f"{name}: jobs fehlt"
               print("OK", name)
-          # Pflicht-Bausteine der AWS-Vorlagen
+          # Pflicht-Bausteine der AWS-Workflows
           ecr = (base / "aufgabe2.yml").read_text()
           ecs = (base / "aufgabe3.yml").read_text()
           assert "amazon-ecr-login" in ecr, "ECR-Login fehlt in aufgabe2"

@@ -2,7 +2,7 @@
 
 **Ziel:** Das gebaute Image automatisch in eine Container-Registry (AWS ECR) hochladen.
 
-Workflow-Vorlage: [uebung01-ci-build/.github/workflows/aufgabe2.yml](uebung01-ci-build/.github/workflows/aufgabe2.yml)
+Workflow: [.github/workflows/aufgabe2.yml](../.github/workflows/aufgabe2.yml)
 
 ---
 

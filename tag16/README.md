@@ -6,33 +6,38 @@ AWS ECS** (Übung 3). Die Übungen bauen aufeinander auf.
 
 | Übung | Thema | Erklärung | Lauffähiger Code |
 |-------|-------|-----------|------------------|
-| 📓 Übung 1 | Automatisierter Build (CI-Pipeline) | [tag16_Praxisauftrag01.md](tag16_Praxisauftrag01.md) | [uebung01-ci-build/](uebung01-ci-build/) |
-| 📓 Übung 2 | Container Registry (Push zu AWS ECR) | [tag16_Praxisauftrag02.md](tag16_Praxisauftrag02.md) | Vorlage (AWS-Secrets) |
-| 📓 Übung 3 | Continuous Deployment auf AWS ECS | [tag16_Praxisauftrag03.md](tag16_Praxisauftrag03.md) | Vorlage (AWS-Secrets) |
+| 📓 Übung 1 | Automatisierter Build (CI-Pipeline) | [tag16_Praxisauftrag01.md](tag16_Praxisauftrag01.md) | [.github/workflows/aufgabe1.yml](../.github/workflows/aufgabe1.yml) |
+| 📓 Übung 2 | Container Registry (Push zu AWS ECR) | [tag16_Praxisauftrag02.md](tag16_Praxisauftrag02.md) | [.github/workflows/aufgabe2.yml](../.github/workflows/aufgabe2.yml) |
+| 📓 Übung 3 | Continuous Deployment auf AWS ECS | [tag16_Praxisauftrag03.md](tag16_Praxisauftrag03.md) | [.github/workflows/aufgabe3.yml](../.github/workflows/aufgabe3.yml) |
 
 ---
 
 ## Aufbau
 
+Die Lösungsdateien liegen **genau dort, wo sie im eigenen Repo auch liegen müssen** — im
+Wurzel-Verzeichnis bzw. in `.github/workflows/`:
+
 ```
+app.py                                             # Flask "Hello, World!" (Port 8080)
+requirements.txt                                   # flask
+Dockerfile                                         # python:3.11-slim
+.github/workflows/
+├── aufgabe1.yml                                   # Übung 1: CI-Build + Container-Test
+├── aufgabe2.yml                                   # Übung 2: Push zu AWS ECR
+├── aufgabe3.yml                                   # Übung 3: Deploy zu AWS ECS
+└── tag16-praxis.yml                               # baut/testet Übung 1 beweisbar, validiert 2+3
 tag16/
+├── README.md                                      # diese Übersicht
 ├── verify.sh                                      # lokale Selbstkontrolle
-└── uebung01-ci-build/
-    ├── app.py                                     # Flask "Hello, World!" (Port 8080)
-    ├── requirements.txt                           # flask
-    ├── Dockerfile                                 # python:3.11-slim
-    └── .github/workflows/
-        ├── aufgabe1.yml                           # CI-Build + Container-Test
-        ├── aufgabe2.yml                           # Push zu AWS ECR (Vorlage)
-        └── aufgabe3.yml                           # Deploy zu AWS ECS (Vorlage)
-.github/workflows/tag16-praxis.yml                 # baut/testet Übung 1 beweisbar, validiert 2+3
+└── tag16_Praxisauftrag0X.md                       # die drei Musterlösungs-Dokumente
 ```
 
-> **Hinweis:** Die `aufgabe*.yml` im Auftrags-Ordner sind **Vorlagen** für das eigene Repo der
-> Studierenden (GitHub führt nur Workflows im Wurzel-Ordner `.github/workflows/` aus). Übung 2+3
-> pushen/deployen nach AWS und brauchen AWS-Secrets. Damit die Musterlösung hier beweisbar grün
-> läuft, baut und testet [`.github/workflows/tag16-praxis.yml`](../.github/workflows/tag16-praxis.yml)
-> das Image von Übung 1 und validiert die AWS-Vorlagen.
+> **Hinweis:** Die drei `aufgabe*.yml` sind auf `branches: [ "main" ]` begrenzt. Im eigenen Repo
+> ist `main` der Default-Branch und sie starten bei jedem Push; auf diesem Musterlösungs-Branch
+> laufen sie deshalb nicht an — Übung 2 und 3 brauchen ausserdem AWS-Secrets. Damit die
+> Musterlösung hier trotzdem beweisbar grün läuft, baut und testet
+> [`.github/workflows/tag16-praxis.yml`](../.github/workflows/tag16-praxis.yml) das Image von
+> Übung 1 und validiert die AWS-Workflows.
 
 ---
 
@@ -45,7 +50,7 @@ bash tag16/verify.sh        # alle Übungen
 bash tag16/verify.sh 1      # nur Übung 1
 ```
 
-Prüft die Dateien und die Workflow-Vorlagen (YAML). Läuft Docker lokal, wird zusätzlich das
+Prüft die Dateien und die Workflows (YAML). Läuft Docker lokal, wird zusätzlich das
 Image gebaut, der Container gestartet und die HTTP-Antwort getestet; sonst laufen diese Schritte
 in GitHub Actions. Erwartet (mit Docker):
 
@@ -60,7 +65,7 @@ Nach einem Push laufen im Reiter **Actions** zwei Jobs:
 
 ```
 Übung 1 — CI-Build (Image + Test)      Image bauen + Container-HTTP-Test
-Übung 2/3 — AWS-Workflows (YAML)       ECR-/ECS-Vorlagen validiert
+Übung 2/3 — AWS-Workflows (YAML)       ECR-/ECS-Workflows validiert
 ```
 
 ---
