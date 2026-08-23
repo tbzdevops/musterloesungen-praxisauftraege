@@ -30,6 +30,7 @@ requirements.txt                                # pytest
 .github/workflows/
 ├── ai-review.yml                               # Auftrag 3: AI-Review bei Pull Requests
 └── tag13-praxis.yml                            # führt Auftrag 1+2 (pytest) beweisbar aus
+DOKUMENTATION.md                                # Auftrag 4: Prompt Injection
 tag13/
 ├── README.md                                   # diese Übersicht
 ├── verify.sh                                   # lokale Selbstkontrolle
