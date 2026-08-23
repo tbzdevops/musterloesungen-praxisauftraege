@@ -23,6 +23,7 @@ app.py                                     # Übung 2: Hello-Docker-Webserver (s
 Dockerfile                                 # Übung 2: python:3.11-slim
 docker-compose.yml                         # Übung 3: web + redis
 .github/workflows/tag15-praxis.yml         # baut/startet/testet Übung 2+3 beweisbar
+DOKUMENTATION.md                           # Übung 1: Befehle und Beobachtungen
 tag15/
 ├── README.md                              # diese Übersicht
 ├── verify.sh                              # lokale Selbstkontrolle
