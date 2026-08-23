@@ -28,7 +28,7 @@ DSVPWA-Fork der Studierenden hingehören:
 ├── aufgabe1-sast-sca.yml                           # Auftrag 3: Snyk SCA + Snyk Code (SAST)
 ├── aufgabe2-dast.yml                               # Auftrag 3: App starten + OWASP ZAP Baseline
 └── tag12-praxis.yml                                # bildet die Aufträge hier beweisbar nach
-DOKUMENTATION.md                                 # Auftrag 1 + 2: Befunde und Massnahmen
+DOKUMENTATION.md                                    # Auftrag 1 + 2: Befunde und Massnahmen
 tag12/
 ├── README.md                                       # diese Übersicht
 ├── verify.sh                                       # lokale Selbstkontrolle
