@@ -4,11 +4,14 @@
 #   bash tag04/verify.sh        # alle Aufträge
 #   bash tag04/verify.sh 2      # nur Auftrag 2
 #
-# Prüft dieselben Schritte, die auch .github/workflows/tag04-praxis.yml in CI ausführt.
+# Die Lösungsdateien liegen dort, wo sie im eigenen Repo auch liegen müssen:
+# im Wurzel-Verzeichnis bzw. in .github/workflows/. Auftrag 3 erweitert die
+# Pipeline aus Auftrag 2 in derselben Datei ci-build-test.yml.
 
 set -uo pipefail
 
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WF_DIR="$REPO_DIR/.github/workflows"
 PASS=0
 FAIL=0
 
@@ -34,7 +37,7 @@ run_step() {
   cd "$previous_dir" || return
 }
 
-# Legt ein Wegwerf-Venv an, installiert requirements.txt und gibt den Pfad zum Python aus.
+# Legt ein Wegwerf-Venv an, installiert requirements.txt und gibt den Pfad zum Venv aus.
 setup_venv() {
   local project_dir="$1"
   local venv_dir
@@ -47,7 +50,7 @@ setup_venv() {
 
 verify_auftrag1() {
   head1 "Auftrag 1 — Hello CI"
-  local workflow="$BASE_DIR/auftrag01-hello-ci/.github/workflows/hello-ci.yml"
+  local workflow="$WF_DIR/hello-ci.yml"
 
   if [ -f "$workflow" ]; then
     ok "Workflow-Datei .github/workflows/hello-ci.yml existiert"
@@ -73,34 +76,62 @@ verify_auftrag1() {
 
 verify_auftrag2() {
   head1 "Auftrag 2 — Build und Test"
-  local dir="$BASE_DIR/auftrag02-build-test"
+  local workflow="$WF_DIR/ci-build-test.yml"
   local venv
 
-  if ! venv="$(setup_venv "$dir")"; then
+  if [ -f "$workflow" ]; then
+    ok "Workflow-Datei .github/workflows/ci-build-test.yml existiert"
+  else
+    nok "Workflow-Datei .github/workflows/ci-build-test.yml fehlt"
+  fi
+
+  grep -q 'actions/setup-python' "$workflow" 2>/dev/null \
+    && ok "Python-Setup im Workflow (actions/setup-python)" \
+    || nok "actions/setup-python fehlt"
+
+  grep -qiE 'pip install.*requirements\.txt' "$workflow" 2>/dev/null \
+    && ok "Abhängigkeiten werden installiert (pip install -r requirements.txt)" \
+    || nok "pip install -r requirements.txt fehlt"
+
+  grep -qi 'pytest' "$workflow" 2>/dev/null \
+    && ok "Tests werden im Workflow ausgeführt (pytest)" \
+    || nok "pytest-Schritt fehlt"
+
+  if ! venv="$(setup_venv "$REPO_DIR")"; then
     nok "Dependencies aus requirements.txt installieren"
     return
   fi
   ok "Dependencies aus requirements.txt installiert"
 
-  run_step "$dir" "pytest -q läuft grün" "$venv/bin/pytest" -q
+  run_step "$REPO_DIR" "pytest -q läuft grün" "$venv/bin/pytest" -q
 }
 
 verify_auftrag3() {
   head1 "Auftrag 3 — Linter und Docker-Build"
-  local dir="$BASE_DIR/auftrag03-lint-docker"
+  local workflow="$WF_DIR/ci-build-test.yml"
   local venv
 
-  if ! venv="$(setup_venv "$dir")"; then
+  [ -f "$REPO_DIR/Dockerfile" ] \
+    && ok "Dockerfile im Wurzel-Verzeichnis vorhanden" \
+    || nok "Dockerfile fehlt"
+
+  grep -qi 'flake8' "$workflow" 2>/dev/null \
+    && ok "Linter-Schritt im Workflow (flake8)" \
+    || nok "flake8-Schritt fehlt"
+
+  grep -qi 'docker build' "$workflow" 2>/dev/null \
+    && ok "Docker-Build-Schritt im Workflow" \
+    || nok "docker build fehlt"
+
+  if ! venv="$(setup_venv "$REPO_DIR")"; then
     nok "Dependencies aus requirements.txt installieren"
     return
   fi
-  ok "Dependencies aus requirements.txt installiert"
 
-  run_step "$dir" "flake8 . meldet keine Verstösse" "$venv/bin/flake8" .
-  run_step "$dir" "pytest -q läuft grün" "$venv/bin/pytest" -q
+  run_step "$REPO_DIR" "flake8 . meldet keine Verstösse" "$venv/bin/flake8" .
 
   if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-    run_step "$dir" "docker build -t myapp:latest ." docker build -t myapp:latest .
+    run_step "$REPO_DIR" "docker build -t myapp:latest ." docker build -t myapp:latest .
   else
     echo "⏭️  Docker nicht verfügbar — Image-Build übersprungen (läuft in GitHub Actions)"
   fi
