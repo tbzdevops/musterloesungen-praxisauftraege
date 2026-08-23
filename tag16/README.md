@@ -26,6 +26,7 @@ Dockerfile                                         # python:3.11-slim
 ├── aufgabe2.yml                                   # Übung 2: Push zu AWS ECR
 ├── aufgabe3.yml                                   # Übung 3: Deploy zu AWS ECS
 └── tag16-praxis.yml                               # baut/testet Übung 1 beweisbar, validiert 2+3
+DOKUMENTATION.md                                   # Übung 1-3: Pipeline-Doku
 tag16/
 ├── README.md                                      # diese Übersicht
 ├── verify.sh                                      # lokale Selbstkontrolle
