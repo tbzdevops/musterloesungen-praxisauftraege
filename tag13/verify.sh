@@ -9,6 +9,7 @@
 set -uo pipefail
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$BASE_DIR/.." && pwd)"
 PASS=0
 FAIL=0
 
@@ -28,8 +29,9 @@ setup_venv() {
 
 run_pytest() {
   local dir="$1" desc="$2" venv output
+  shift 2
   if ! venv="$(setup_venv "$dir")"; then nok "$desc (Setup fehlgeschlagen)"; return; fi
-  if output="$(cd "$dir" && "$venv/bin/python" -m pytest -q 2>&1)"; then
+  if output="$(cd "$dir" && "$venv/bin/python" -m pytest -q "$@" 2>&1)"; then
     ok "$desc"
   else
     nok "$desc"; echo "$output" | sed 's/^/     /'
@@ -38,21 +40,23 @@ run_pytest() {
 
 verify_auftrag1() {
   head1 "Auftrag 1 — AI-Assisted Development"
-  run_pytest "$BASE_DIR/auftrag01-ai-assisted" "validate_email: pytest läuft grün"
+  [ -f "$REPO_DIR/utils/validators.py" ] \
+    && ok "utils/validators.py vorhanden" || nok "utils/validators.py fehlt"
+  run_pytest "$REPO_DIR" "validate_email: pytest läuft grün" tests/test_validators.py
 }
 
 verify_auftrag2() {
   head1 "Auftrag 2 — Spec-Driven Development & ADR"
-  run_pytest "$BASE_DIR/auftrag02-spec-adr" "validate_discount_code: pytest läuft grün"
-  [ -f "$BASE_DIR/auftrag02-spec-adr/specs/rabattcode.md" ] \
+  run_pytest "$REPO_DIR" "validate_discount_code: pytest läuft grün" tests/test_discount.py
+  [ -f "$REPO_DIR/specs/rabattcode.md" ] \
     && ok "Spec specs/rabattcode.md vorhanden" || nok "Spec fehlt"
-  [ -f "$BASE_DIR/auftrag02-spec-adr/docs/adr/0001-rabattcode-validierung.md" ] \
+  [ -f "$REPO_DIR/docs/adr/0001-rabattcode-validierung.md" ] \
     && ok "ADR 0001 vorhanden" || nok "ADR fehlt"
 }
 
 verify_auftrag3() {
   head1 "Auftrag 3 — AI in der CI/CD-Pipeline"
-  local wf="$BASE_DIR/auftrag03-ai-cicd/.github/workflows/ai-review.yml"
+  local wf="$REPO_DIR/.github/workflows/ai-review.yml"
   if [ ! -f "$wf" ]; then nok "ai-review.yml fehlt"; return; fi
   if command -v python3 >/dev/null 2>&1 && python3 -c "import yaml" >/dev/null 2>&1; then
     python3 -c "import yaml; yaml.safe_load(open('$wf'))" >/dev/null 2>&1 \

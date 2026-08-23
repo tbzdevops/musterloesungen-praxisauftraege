@@ -7,37 +7,39 @@ GitHub-Actions-Vorlage; Auftrag 4 ist eine Analyse-/Diskussionsübung.
 
 | Auftrag | Thema | Erklärung | Lauffähiger Code |
 |---------|-------|-----------|------------------|
-| 📓 Auftrag 1 | AI-Assisted Development (Code kritisch prüfen) | [tag13_Praxisauftrag01.md](tag13_Praxisauftrag01.md) | [auftrag01-ai-assisted/](auftrag01-ai-assisted/) |
-| 📓 Auftrag 2 | Spec-Driven Development & ADR | [tag13_Praxisauftrag02.md](tag13_Praxisauftrag02.md) | [auftrag02-spec-adr/](auftrag02-spec-adr/) |
-| 📓 Auftrag 3 | AI in der CI/CD-Pipeline (PR-Feedback) | [tag13_Praxisauftrag03.md](tag13_Praxisauftrag03.md) | [auftrag03-ai-cicd/](auftrag03-ai-cicd/) |
+| 📓 Auftrag 1 | AI-Assisted Development (Code kritisch prüfen) | [tag13_Praxisauftrag01.md](tag13_Praxisauftrag01.md) | [utils/validators.py](../utils/validators.py) |
+| 📓 Auftrag 2 | Spec-Driven Development & ADR | [tag13_Praxisauftrag02.md](tag13_Praxisauftrag02.md) | [discounts/validator.py](../discounts/validator.py) |
+| 📓 Auftrag 3 | AI in der CI/CD-Pipeline (PR-Feedback) | [tag13_Praxisauftrag03.md](tag13_Praxisauftrag03.md) | [.github/workflows/ai-review.yml](../.github/workflows/ai-review.yml) |
 | 📓 Auftrag 4 | Prompt Injection — Angriff & Verteidigung | [tag13_Praxisauftrag04.md](tag13_Praxisauftrag04.md) | Analyseübung (kein Code) |
 
 ---
 
 ## Aufbau
 
+Die Lösungsdateien liegen **genau dort, wo sie im eigenen Repo auch liegen müssen** — im
+Wurzel-Verzeichnis bzw. in `.github/workflows/`:
+
 ```
+utils/validators.py                             # Auftrag 1: validate_email (AI-Entwurf + Review)
+tests/test_validators.py                        # Auftrag 1: pytest-Tests
+specs/rabattcode.md                             # Auftrag 2: Spec zuerst
+discounts/validator.py                          # Auftrag 2: validate_discount_code
+tests/test_discount.py                          # Auftrag 2: Akzeptanzkriterien als Tests
+docs/adr/0001-rabattcode-validierung.md         # Auftrag 2: Architecture Decision Record
+requirements.txt                                # pytest
+.github/workflows/
+├── ai-review.yml                               # Auftrag 3: AI-Review bei Pull Requests
+└── tag13-praxis.yml                            # führt Auftrag 1+2 (pytest) beweisbar aus
 tag13/
+├── README.md                                   # diese Übersicht
 ├── verify.sh                                   # lokale Selbstkontrolle
-├── auftrag01-ai-assisted/
-│   ├── utils/validators.py                     # validate_email (AI-Entwurf + Review)
-│   ├── tests/test_validators.py
-│   └── requirements.txt
-├── auftrag02-spec-adr/
-│   ├── specs/rabattcode.md                     # Spec zuerst
-│   ├── discounts/validator.py                  # validate_discount_code
-│   ├── tests/test_discount.py                  # Akzeptanzkriterien als Tests
-│   ├── docs/adr/0001-rabattcode-validierung.md # Architecture Decision Record
-│   └── requirements.txt
-└── auftrag03-ai-cicd/
-    └── .github/workflows/ai-review.yml         # AI-Review-Workflow (Vorlage)
-.github/workflows/tag13-praxis.yml              # führt Auftrag 1+2 (pytest) beweisbar aus
+└── tag13_Praxisauftrag0X.md                    # die vier Musterlösungs-Dokumente
 ```
 
-> **Hinweis:** GitHub führt nur Workflows im Wurzel-Ordner `.github/workflows/` aus. `ai-review.yml`
-> im Auftrags-Ordner ist deshalb eine **Vorlage** fürs eigene Repo. Damit die Musterlösungen hier
-> beweisbar grün laufen, führt [`.github/workflows/tag13-praxis.yml`](../.github/workflows/tag13-praxis.yml)
-> die Tests von Auftrag 1+2 aus und validiert die Vorlage.
+> **Hinweis:** `ai-review.yml` reagiert auf `pull_request` und braucht einen offenen PR — auf
+> einem reinen Push läuft er deshalb nicht an. Damit die Musterlösungen trotzdem beweisbar grün
+> sind, führt [`.github/workflows/tag13-praxis.yml`](../.github/workflows/tag13-praxis.yml)
+> die Tests von Auftrag 1+2 aus und validiert `ai-review.yml`.
 
 ---
 
@@ -50,21 +52,20 @@ bash tag13/verify.sh        # alle Aufträge
 bash tag13/verify.sh 2      # nur Auftrag 2
 ```
 
-Legt pro Auftrag ein Wegwerf-Venv an, installiert `pytest` und führt die Tests aus. Erwartet:
+Legt ein Wegwerf-Venv an, installiert `pytest` und führt die Tests der Aufträge aus. Erwartet:
 
 ```
-✅ Erfüllt:    8
+✅ Erfüllt:    9
 ❌ Fehlen:     0
 ```
 
 ### In GitHub Actions
 
-Nach einem Push laufen im Reiter **Actions** drei Jobs:
+Nach einem Push laufen im Reiter **Actions** zwei Jobs:
 
 ```
-Auftrag 1 — AI-Assisted (validate_email)          pytest grün
-Auftrag 2 — Spec-Driven (validate_discount_code)  pytest grün
-Auftrag 3 — AI-Review-Workflow (YAML)             Vorlage validiert
+Auftrag 1+2 — pytest (validate_email, validate_discount_code)   pytest grün
+Auftrag 3 — AI-Review-Workflow (YAML)                           Workflow validiert
 ```
 
 ---

@@ -3,7 +3,7 @@
 **Ziel:** Einen AI-Schritt in GitHub Actions integrieren, der bei jedem Pull Request
 automatisch ein Code-Review als PR-Kommentar hinterlässt.
 
-Workflow-Vorlage: [auftrag03-ai-cicd/.github/workflows/ai-review.yml](auftrag03-ai-cicd/.github/workflows/ai-review.yml)
+Workflow: [.github/workflows/ai-review.yml](../.github/workflows/ai-review.yml)
 
 ---
 

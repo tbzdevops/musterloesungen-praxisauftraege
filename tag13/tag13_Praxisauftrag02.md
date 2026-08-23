@@ -3,13 +3,13 @@
 **Ziel:** Den Unterschied zwischen Ad-hoc-Prompting (Auftrag 1) und **spec-getriebenem**
 Vorgehen erleben und eine Entscheidung als **ADR** dokumentieren.
 
-Lauffähiger Code: [auftrag02-spec-adr/](auftrag02-spec-adr/)
+Lauffähiger Code: [discounts/validator.py](../discounts/validator.py), [tests/test_discount.py](../tests/test_discount.py)
 
 ---
 
 ## Teil A — Spec zuerst
 
-Die Spec [`specs/rabattcode.md`](auftrag02-spec-adr/specs/rabattcode.md) beschreibt das Feature
+Die Spec [`specs/rabattcode.md`](../specs/rabattcode.md) beschreibt das Feature
 **vor** der Implementierung: Anforderungen, Akzeptanzkriterien, Out of Scope.
 
 ## Teil B — AI gegen die Spec implementieren
@@ -37,15 +37,14 @@ def validate_discount_code(code, expired_codes=None, redeemed_codes=None) -> boo
 | Einmal-Code erneut | `test_bereits_eingeloest` | ❌ abgelehnt |
 
 ```bash
-cd auftrag02-spec-adr
 pip install -r requirements.txt
-pytest -q          # 5 passed
+pytest -q tests/test_discount.py       # 5 passed
 ```
 
 ## Teil C — Entscheidung als ADR
 
 Während der Umsetzung fiel die Entscheidung *Validierung im Applikationscode* (statt in der
-DB). Festgehalten in [`docs/adr/0001-rabattcode-validierung.md`](auftrag02-spec-adr/docs/adr/0001-rabattcode-validierung.md)
+DB). Festgehalten in [`docs/adr/0001-rabattcode-validierung.md`](../docs/adr/0001-rabattcode-validierung.md)
 mit Status / Kontext / Entscheidung / Konsequenzen.
 
 ## Reflexion

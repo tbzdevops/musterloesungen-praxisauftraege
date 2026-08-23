@@ -2,7 +2,7 @@
 
 **Ziel:** AI-generierten Code aus Entwicklerperspektive erzeugen und **kritisch** bewerten.
 
-Lauffähiger Code: [auftrag01-ai-assisted/](auftrag01-ai-assisted/)
+Lauffähiger Code: [utils/validators.py](../utils/validators.py), [tests/test_validators.py](../tests/test_validators.py)
 
 ---
 
@@ -48,9 +48,8 @@ Die geforderten Inputs sind als Tests hinterlegt (`tests/test_validators.py`):
 | `None`, `""` | ❌ (vom AI-Vorschlag nicht abgedeckt) |
 
 ```bash
-cd auftrag01-ai-assisted
 pip install -r requirements.txt
-pytest -q          # 5 passed
+pytest -q tests/test_validators.py     # 5 passed
 ```
 
 ## 4. Reflexion
