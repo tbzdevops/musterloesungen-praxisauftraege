@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-# Auftrag 3: ueberholte Laeufe auf demselben Branch abbrechen.
+# Auftrag 3: überholte Läufe auf demselben Branch abbrechen.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

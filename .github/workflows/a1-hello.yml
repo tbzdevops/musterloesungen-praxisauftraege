@@ -1,4 +1,4 @@
-# Auftrag 1 - Bug 1 (behoben): runs-on gehoert eine Ebene unter den Job.
+# Auftrag 1 - Bug 1 (behoben): runs-on gehört eine Ebene unter den Job.
 name: A1 Hello
 
 on: [push]

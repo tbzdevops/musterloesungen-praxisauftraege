@@ -1,8 +1,8 @@
-"""Kleine Hilfsfunktionen fuer den TechStyle-Warenkorb."""
+"""Kleine Hilfsfunktionen für den TechStyle-Warenkorb."""
 
 
 def rabatt(preis, prozent):
-    """Gibt den Preis nach Abzug des Rabatts zurueck."""
+    """Gibt den Preis nach Abzug des Rabatts zurück."""
     return round(preis * (1 - prozent / 100), 2)
 
 

@@ -1,6 +1,6 @@
 # Auftrag 1 - Bug 3
-# Symptom: Der Schritt "Tests" bricht ab, bevor ein einziger Test laeuft.
-name: A3 Abhaengigkeiten
+# Symptom: Der Schritt "Tests" bricht ab, bevor ein einziger Test läuft.
+name: A3 Abhängigkeiten
 
 on: [push]
 
@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Abhaengigkeiten installieren
+      - name: Abhängigkeiten installieren
         run: pip install -r requirements.txt
       - name: Tests
         run: pytest -q
