@@ -2,7 +2,7 @@ from app import rabatt, warenkorb_summe
 
 
 def test_rabatt():
-    assert rabatt(100, 20) == 75.0
+    assert rabatt(100, 20) == 80.0
     assert rabatt(49.90, 0) == 49.9
 
 
