@@ -1,0 +1,18 @@
+# Auftrag 1 - Bug 3
+# Symptom: Der Schritt "Tests" bricht ab, bevor ein einziger Test laeuft.
+name: A3 Abhaengigkeiten
+
+on: [push]
+
+jobs:
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Abhaengigkeiten installieren
+        run: pip install -r requirements.txt
+      - name: Tests
+        run: pytest -q

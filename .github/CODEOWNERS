@@ -1,0 +1,5 @@
+# Jeder Pull Request auf main braucht ein Review aus dem Team.
+# Hier stehen die GitHub-Handles der Gruppe (alternativ ein Team der
+# Organisation, z. B. @tbzdevops/team04).
+*                       @patrickmorgeneggtbz
+/.github/workflows/     @patrickmorgeneggtbz
