@@ -5,14 +5,14 @@ Code-Änderung automatisch ausgeführt wird.
 
 ---
 
-## 1. Repository und Workflow-Datei
+## 1. Ablageort der Workflow-Datei
 
-Auf GitHub wird ein neues Repository angelegt (z. B. `ci-hello-world`). GitHub Actions sucht
-automatisch nach Workflow-Definitionen im Ordner `.github/workflows/`. Dort wird die Datei
-`hello-ci.yml` erstellt.
+Gearbeitet wird im Classroom-Repository von Tag 04 — ein eigenes Repository wird **nicht**
+angelegt. GitHub Actions sucht automatisch nach Workflow-Definitionen im Ordner
+`.github/workflows/` im Wurzel-Verzeichnis. Dort wird die Datei `hello-ci.yml` erstellt.
 
 ```
-ci-hello-world/
+<classroom-repo>/
 └── .github/
     └── workflows/
         └── hello-ci.yml
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Print Hello
-        run: echo "Hello Continuous Integration!"
+        run: echo "🎉 Hello Continuous Integration!"
 ```
 
 ---
@@ -74,7 +74,7 @@ Nach dem Push:
 
 **Erwartete Ausgabe im Log:**
 ```
-Hello Continuous Integration!
+🎉 Hello Continuous Integration!
 ```
 
 ---

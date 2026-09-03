@@ -7,8 +7,10 @@ ausführt. Bei einem fehlschlagenden Test soll der Build rot werden.
 
 ## 1. Projektstruktur
 
+Alle Code-Dateien liegen im **Wurzel-Verzeichnis** des Classroom-Repos:
+
 ```
-ci-build-test/
+<classroom-repo>/
 ├── app.py
 ├── test_app.py
 ├── requirements.txt

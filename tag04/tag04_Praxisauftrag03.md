@@ -12,7 +12,7 @@ Online-Beispiellösung: <https://github.com/tbzdevops/ci-hello-world>
 Gegenüber Auftrag 2 kommen `Dockerfile` und eine erweiterte `requirements.txt` hinzu:
 
 ```
-ci-hello-world/
+<classroom-repo>/
 ├── app.py
 ├── test_app.py
 ├── requirements.txt
