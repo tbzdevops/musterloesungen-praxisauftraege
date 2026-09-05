@@ -1,7 +1,7 @@
-# Prompt Injection — Angriff und Verteidigung (Tag 13, Auftrag 4)
+# Prompt Injection — Angriff und Verteidigung (Tag 12, Auftrag 4)
 
 Dokumentation der Analyse-Übung zu **Prompt Injection**. Die ausführliche Musterlösung mit allen
-Zwischenschritten steht in [tag13/tag13_Praxisauftrag04.md](tag13/tag13_Praxisauftrag04.md).
+Zwischenschritten steht in [tag12/tag12_Praxisauftrag04.md](tag12/tag12_Praxisauftrag04.md).
 
 ## Angriff
 

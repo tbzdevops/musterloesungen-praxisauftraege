@@ -1,6 +1,6 @@
-name: Tag 13 — Praxis-Musterlösungen
+name: Tag 12 — Praxis-Musterlösungen
 
-# Belegt, dass die AI-in-DevOps-Musterlösungen von Tag 13 laufen.
+# Belegt, dass die AI-in-DevOps-Musterlösungen von Tag 12 laufen.
 #   * tests    — validate_email (Auftrag 1) und validate_discount_code (Auftrag 2),
 #                beide mit pytest im Wurzel-Verzeichnis
 #   * validate — der AI-Review-Workflow (Auftrag 3) ist gültiges YAML

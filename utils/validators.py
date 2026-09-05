@@ -1,4 +1,4 @@
-"""E-Mail-Validierung — Musterlösung zu Tag 13, Auftrag 1.
+"""E-Mail-Validierung — Musterlösung zu Tag 12, Auftrag 1.
 
 Entstanden aus einem AI-Vorschlag (Copilot / GitHub Models) und danach KRITISCH
 geprüft und korrigiert. Die Kommentare halten fest, was am AI-Output angepasst wurde.

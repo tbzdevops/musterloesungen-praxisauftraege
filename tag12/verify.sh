@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Lokale Verifikation der Praxis-Aufträge von Tag 13 (AI in DevOps).
+# Lokale Verifikation der Praxis-Aufträge von Tag 12 (AI in DevOps).
 #
-#   bash tag13/verify.sh        # alle Aufträge
-#   bash tag13/verify.sh 2      # nur Auftrag 2
+#   bash tag12/verify.sh        # alle Aufträge
+#   bash tag12/verify.sh 2      # nur Auftrag 2
 #
-# Prüft dieselben Schritte wie .github/workflows/tag13-praxis.yml.
+# Prüft dieselben Schritte wie .github/workflows/tag12-praxis.yml.
 
 set -uo pipefail
 
@@ -69,8 +69,8 @@ verify_auftrag3() {
 
 verify_auftrag4() {
   head1 "Auftrag 4 — Prompt Injection (Analyseübung)"
-  local doc="$BASE_DIR/tag13_Praxisauftrag04.md"
-  [ -f "$doc" ] && ok "Musterlösung tag13_Praxisauftrag04.md vorhanden" || nok "Doku fehlt"
+  local doc="$BASE_DIR/tag12_Praxisauftrag04.md"
+  [ -f "$doc" ] && ok "Musterlösung tag12_Praxisauftrag04.md vorhanden" || nok "Doku fehlt"
   grep -q 'Prompt' "$doc" 2>/dev/null && ok "Doku behandelt Prompt Injection" || nok "Doku unvollständig"
 }
 
@@ -82,11 +82,11 @@ main() {
     3) verify_auftrag3 ;;
     4) verify_auftrag4 ;;
     all) verify_auftrag1; verify_auftrag2; verify_auftrag3; verify_auftrag4 ;;
-    *) echo "Verwendung: bash tag13/verify.sh [1|2|3|4]"; exit 2 ;;
+    *) echo "Verwendung: bash tag12/verify.sh [1|2|3|4]"; exit 2 ;;
   esac
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "📊 Tag 13 Praxis — Zusammenfassung"
+  echo "📊 Tag 12 Praxis — Zusammenfassung"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "✅ Erfüllt:    $PASS"
   echo "❌ Fehlen:     $FAIL"

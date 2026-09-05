@@ -1,4 +1,4 @@
-"""Rabattcode-Validierung — Musterlösung zu Tag 13, Auftrag 2.
+"""Rabattcode-Validierung — Musterlösung zu Tag 12, Auftrag 2.
 
 Gegen die Spec (specs/rabattcode.md) implementiert. Die Akzeptanzkriterien aus der
 Spec sind 1:1 als Tests übernommen (tests/test_discount.py).
