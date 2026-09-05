@@ -52,10 +52,10 @@ Stand sichtbar ist, den man am Ende des Tages im eigenen Repo haben sollte.
 | Tag 09 | Hands-on Day 1: Konsolidierung Tag 01–08 | `day_9_solution` | 🕓 folgt |
 | Tag 10 | CALMS + Monitoring: Grafana Dashboards, SLO/SLI | `day_10_solution` | 🕓 folgt |
 | Tag 11 | Monitoring & Alerting: Metriken, Alerts, User Journeys | `day_11_solution` | 🕓 folgt |
-| Tag 12 | DevSecOps: Snyk (SAST/SCA) und OWASP ZAP (DAST) | [`day_12_solution` → `tag12/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_12_solution/tag12) | ✅ |
-| Tag 13 | AI in DevOps: AI-assisted Dev, ADR, AI in CI/CD, Prompt Injection | [`day_13_solution` → `tag13/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_13_solution/tag13) | ✅ |
-| Tag 14 | Container-Grundlagen: Dockerfile Best Practices, Multistage | `day_14_solution` | 🕓 folgt |
-| Tag 15 | Docker Basics: erster Container, eigenes Image, Compose-Stack | [`day_15_solution` → `tag15/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_15_solution/tag15) | ✅ |
+| Tag 12 | AI in DevOps: AI-assisted Dev, ADR, AI in CI/CD, Prompt Injection | [`day_12_solution` → `tag12/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_12_solution/tag12) | ✅ |
+| Tag 13 | Container-Grundlagen (Docker Basics): erster Container, eigenes Image, Compose-Stack | [`day_13_solution` → `tag13/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_13_solution/tag13) | ✅ |
+| Tag 14 | Container-Automatisierung: CI-Build, ECR-Push, ECS-Deployment | [`day_14_solution` → `tag14/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_14_solution/tag14) | ✅ |
+| Tag 15 | DevSecOps: Snyk (SAST/SCA) und OWASP ZAP (DAST) | [`day_15_solution` → `tag15/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_15_solution/tag15) | ✅ |
 | Tag 16 | Container-Automatisierung: CI-Build, ECR-Push, ECS-Deployment | [`day_16_solution` → `tag16/`](https://github.com/tbzdevops/musterloesungen-praxisauftraege/tree/day_16_solution/tag16) | ✅ |
 | Tag 17 | Hands-on Day 2: Projekt-Workshop, offene Punkte | `day_17_solution` | 🕓 folgt |
 | Tag 18 | Infrastructure as Code mit Terraform | `day_18_solution` | 🕓 folgt |
