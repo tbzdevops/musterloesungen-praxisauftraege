@@ -1,4 +1,4 @@
-# Tag 15 – Praxis-Musterlösungen (Docker Basics)
+# Tag 13 – Praxis-Musterlösungen (Docker Basics)
 
 Container-Grundlagen mit Docker: erster Container (Übung 1), **eigenes Image** bauen und starten
 (Übung 2) und ein **Docker-Compose-Stack** aus zwei Containern (Übung 3). Die Übungen bauen
@@ -6,9 +6,9 @@ aufeinander auf; alles läuft lokal, ohne kostenpflichtige Cloud-Dienste.
 
 | Übung | Thema | Erklärung | Lauffähiger Code |
 |-------|-------|-----------|------------------|
-| 📓 Übung 1 | Hallo Docker! (erster Container) | [tag15_Praxisauftrag01.md](tag15_Praxisauftrag01.md) | reine CLI-Übung |
-| 📓 Übung 2 | Eigenes Container-Image bauen | [tag15_Praxisauftrag02.md](tag15_Praxisauftrag02.md) | [Dockerfile](../Dockerfile) + [app.py](../app.py) |
-| 📓 Übung 3 | Microservices mit Docker Compose | [tag15_Praxisauftrag03.md](tag15_Praxisauftrag03.md) | [docker-compose.yml](../docker-compose.yml) |
+| 📓 Übung 1 | Hallo Docker! (erster Container) | [tag13_Praxisauftrag01.md](tag13_Praxisauftrag01.md) | reine CLI-Übung |
+| 📓 Übung 2 | Eigenes Container-Image bauen | [tag13_Praxisauftrag02.md](tag13_Praxisauftrag02.md) | [Dockerfile](../Dockerfile) + [app.py](../app.py) |
+| 📓 Übung 3 | Microservices mit Docker Compose | [tag13_Praxisauftrag03.md](tag13_Praxisauftrag03.md) | [docker-compose.yml](../docker-compose.yml) |
 
 ---
 
@@ -22,12 +22,12 @@ Wurzel-Verzeichnis. Übung 3 baut auf dem Image aus Übung 2 auf und nutzt dasse
 app.py                                     # Übung 2: Hello-Docker-Webserver (stdlib, Port 8080)
 Dockerfile                                 # Übung 2: python:3.11-slim
 docker-compose.yml                         # Übung 3: web + redis
-.github/workflows/tag15-praxis.yml         # baut/startet/testet Übung 2+3 beweisbar
+.github/workflows/tag13-praxis.yml         # baut/startet/testet Übung 2+3 beweisbar
 DOKUMENTATION.md                           # Übung 1: Befehle und Beobachtungen
-tag15/
+tag13/
 ├── README.md                              # diese Übersicht
 ├── verify.sh                              # lokale Selbstkontrolle
-└── tag15_Praxisauftrag0X.md               # die drei Musterlösungs-Dokumente
+└── tag13_Praxisauftrag0X.md               # die drei Musterlösungs-Dokumente
 ```
 
 ---
@@ -37,8 +37,8 @@ tag15/
 ### Lokal
 
 ```bash
-bash tag15/verify.sh        # alle Übungen
-bash tag15/verify.sh 2      # nur Übung 2
+bash tag13/verify.sh        # alle Übungen
+bash tag13/verify.sh 2      # nur Übung 2
 ```
 
 Prüft die Dateien und — wenn Docker lokal läuft — baut das Image, startet den Container und
@@ -63,4 +63,4 @@ vorinstalliert):
 ---
 
 > Die Containerisierung des **TechStyle**-Projekts liegt im Repo `techstyle`
-> (Branch `day_15_solution`), nicht hier.
+> (Branch `day_13_solution`), nicht hier.

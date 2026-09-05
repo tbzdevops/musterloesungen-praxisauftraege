@@ -1,6 +1,6 @@
-name: Tag 15 — Praxis-Musterlösungen
+name: Tag 13 — Praxis-Musterlösungen
 
-# Belegt, dass die Docker-Musterlösungen von Tag 15 wirklich laufen.
+# Belegt, dass die Docker-Musterlösungen von Tag 13 wirklich laufen.
 #   * uebung02 — eigenes Image bauen, Container starten, HTTP-Antwort prüfen
 #   * uebung03 — docker compose Stack (web + redis) starten und beide prüfen
 # Dockerfile, app.py und docker-compose.yml liegen im Wurzel-Verzeichnis, genau

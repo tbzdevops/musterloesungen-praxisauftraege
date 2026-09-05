@@ -1,7 +1,7 @@
-# Docker Basics — Übung 1 (Tag 15 Praxis)
+# Docker Basics — Übung 1 (Tag 13 Praxis)
 
 Dokumentation der reinen CLI-Übung „Hallo Docker!". Die ausführliche Musterlösung steht in
-[tag15/tag15_Praxisauftrag01.md](tag15/tag15_Praxisauftrag01.md); Übung 2 und 3 liegen als
+[tag13/tag13_Praxisauftrag01.md](tag13/tag13_Praxisauftrag01.md); Übung 2 und 3 liegen als
 Code im Wurzel-Verzeichnis ([Dockerfile](Dockerfile), [app.py](app.py),
 [docker-compose.yml](docker-compose.yml)).
 

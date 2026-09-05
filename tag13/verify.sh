@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Lokale Verifikation der Praxis-Übungen von Tag 15 (Docker Basics).
+# Lokale Verifikation der Praxis-Übungen von Tag 13 (Docker Basics).
 #
-#   bash tag15/verify.sh        # alle Übungen
-#   bash tag15/verify.sh 2      # nur Übung 2
+#   bash tag13/verify.sh        # alle Übungen
+#   bash tag13/verify.sh 2      # nur Übung 2
 #
-# Prüft dieselben Schritte wie .github/workflows/tag15-praxis.yml. Ohne laufenden
+# Prüft dieselben Schritte wie .github/workflows/tag13-praxis.yml. Ohne laufenden
 # Docker-Daemon werden die Build-/Run-Schritte übersprungen (laufen dann in CI).
 
 set -uo pipefail
@@ -22,7 +22,7 @@ docker_up() { command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; 
 
 verify_uebung1() {
   head1 "Übung 1 — Hallo Docker! (CLI)"
-  local doc="$BASE_DIR/tag15_Praxisauftrag01.md"
+  local doc="$BASE_DIR/tag13_Praxisauftrag01.md"
   [ -f "$doc" ] && ok "Musterlösung Übung 1 vorhanden" || nok "Doku Übung 1 fehlt"
   grep -q 'docker run hello-world' "$doc" 2>/dev/null \
     && ok "Doku zeigt docker run hello-world" || nok "Doku unvollständig"
@@ -90,11 +90,11 @@ main() {
     2) verify_uebung2 ;;
     3) verify_uebung3 ;;
     all) verify_uebung1; verify_uebung2; verify_uebung3 ;;
-    *) echo "Verwendung: bash tag15/verify.sh [1|2|3]"; exit 2 ;;
+    *) echo "Verwendung: bash tag13/verify.sh [1|2|3]"; exit 2 ;;
   esac
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "📊 Tag 15 Praxis — Zusammenfassung"
+  echo "📊 Tag 13 Praxis — Zusammenfassung"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "✅ Erfüllt:    $PASS"
   echo "❌ Fehlen:     $FAIL"
