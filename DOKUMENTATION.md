@@ -1,10 +1,10 @@
-# Sicherheitsbefunde DSVPWA — Tag 12 Praxis
+# Sicherheitsbefunde DSVPWA — Tag 15 Praxis
 
 Dokumentation der Befunde aus **Auftrag 1** (statische Analyse mit Snyk) und **Auftrag 2**
 (dynamischer Test mit OWASP ZAP) an der Anwendung
 [DSVPWA](https://github.com/tbzdevops/DSVPWA). Die vollständigen Durchführungen stehen in
-[tag12/tag12_Praxisauftrag01.md](tag12/tag12_Praxisauftrag01.md) und
-[tag12/tag12_Praxisauftrag02.md](tag12/tag12_Praxisauftrag02.md).
+[tag15/tag15_Praxisauftrag01.md](tag15/tag15_Praxisauftrag01.md) und
+[tag15/tag15_Praxisauftrag02.md](tag15/tag15_Praxisauftrag02.md).
 
 ## Befunde und Massnahmen
 

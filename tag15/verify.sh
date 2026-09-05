@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Lokale Verifikation der Praxis-Aufträge von Tag 12 (DevSecOps).
+# Lokale Verifikation der Praxis-Aufträge von Tag 15 (DevSecOps).
 #
-#   bash tag12/verify.sh        # alle Aufträge
-#   bash tag12/verify.sh 3      # nur Auftrag 3
+#   bash tag15/verify.sh        # alle Aufträge
+#   bash tag15/verify.sh 3      # nur Auftrag 3
 #
 # Prüft, was ohne externe Accounts prüfbar ist: dass die Musterlösungs-Dokumente und die
 # Workflow-Dateien vorhanden, gültig und inhaltlich vollständig sind. Snyk (Account/Token)
 # und ein echter ZAP-Scan (Docker) laufen in GitHub Actions — siehe
-# .github/workflows/tag12-praxis.yml.
+# .github/workflows/tag15-praxis.yml.
 
 set -uo pipefail
 
@@ -44,7 +44,7 @@ yaml_valid() {
 
 verify_auftrag1() {
   head1 "Auftrag 1 — SAST + SCA mit Snyk"
-  local doc="$BASE_DIR/tag12_Praxisauftrag01.md"
+  local doc="$BASE_DIR/tag15_Praxisauftrag01.md"
   grep_in "$doc" 'snyk test'      "Doku beschreibt SCA-Scan (snyk test)"
   grep_in "$doc" 'snyk code test' "Doku beschreibt SAST-Scan (snyk code test)"
   grep_in "$doc" 'execute\("SELECT .*\?' "Doku zeigt sichere, parametrisierte Query"
@@ -52,7 +52,7 @@ verify_auftrag1() {
 
 verify_auftrag2() {
   head1 "Auftrag 2 — DAST mit OWASP ZAP"
-  local doc="$BASE_DIR/tag12_Praxisauftrag02.md"
+  local doc="$BASE_DIR/tag15_Praxisauftrag02.md"
   grep_in "$doc" 'zap-baseline.py'  "Doku beschreibt ZAP Baseline Scan"
   grep_in "$doc" 'host.docker.internal' "Doku erklärt Docker-Host-Zugriff"
   grep_in "$doc" 'X-Frame-Options' "Doku nennt nur dynamisch sichtbare Header-Lücke"
@@ -77,12 +77,12 @@ main() {
     2) verify_auftrag2 ;;
     3) verify_auftrag3 ;;
     all) verify_auftrag1; verify_auftrag2; verify_auftrag3 ;;
-    *) echo "Verwendung: bash tag12/verify.sh [1|2|3]"; exit 2 ;;
+    *) echo "Verwendung: bash tag15/verify.sh [1|2|3]"; exit 2 ;;
   esac
 
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "📊 Tag 12 Praxis — Zusammenfassung"
+  echo "📊 Tag 15 Praxis — Zusammenfassung"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "✅ Erfüllt:    $PASS"
   echo "❌ Fehlen:     $FAIL"

@@ -1,6 +1,6 @@
-name: Tag 12 — Praxis-Musterlösungen
+name: Tag 15 — Praxis-Musterlösungen
 
-# Belegt, dass die DevSecOps-Musterlösungen von Tag 12 wirklich laufen.
+# Belegt, dass die DevSecOps-Musterlösungen von Tag 15 wirklich laufen.
 #
 # aufgabe1-sast-sca.yml und aufgabe2-dast.yml liegen hier im Wurzel-Ordner
 # .github/workflows/ — genau dort, wo sie im DSVPWA-Fork der Studierenden hingehoeren.

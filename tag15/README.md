@@ -1,4 +1,4 @@
-# Tag 12 – Praxis-Musterlösungen (DevSecOps)
+# Tag 15 – Praxis-Musterlösungen (DevSecOps)
 
 DevSecOps mit **Snyk** (SAST/SCA) und **OWASP ZAP** (DAST). Die drei Praxis-Aufträge bauen
 aufeinander auf: Zuerst wird der ruhende Code statisch geprüft (Auftrag 1), dann die laufende
@@ -10,9 +10,9 @@ Python Web Application): <https://github.com/tbzdevops/DSVPWA>
 
 | Auftrag | Thema | Erklärung | Lauffähiger Code |
 |---------|-------|-----------|------------------|
-| 📓 Auftrag 1 | Statische Code-Analyse mit Snyk (SAST + SCA) | [tag12_Praxisauftrag01.md](tag12_Praxisauftrag01.md) | lokal (`snyk` CLI) |
-| 📓 Auftrag 2 | Dynamischer Sicherheitstest mit OWASP ZAP (DAST) | [tag12_Praxisauftrag02.md](tag12_Praxisauftrag02.md) | lokal (`docker` + ZAP) |
-| 📓 Auftrag 3 | Security-Scans in die CI/CD-Pipeline einbauen | [tag12_Praxisauftrag03.md](tag12_Praxisauftrag03.md) | [.github/workflows/](../.github/workflows/) |
+| 📓 Auftrag 1 | Statische Code-Analyse mit Snyk (SAST + SCA) | [tag15_Praxisauftrag01.md](tag15_Praxisauftrag01.md) | lokal (`snyk` CLI) |
+| 📓 Auftrag 2 | Dynamischer Sicherheitstest mit OWASP ZAP (DAST) | [tag15_Praxisauftrag02.md](tag15_Praxisauftrag02.md) | lokal (`docker` + ZAP) |
+| 📓 Auftrag 3 | Security-Scans in die CI/CD-Pipeline einbauen | [tag15_Praxisauftrag03.md](tag15_Praxisauftrag03.md) | [.github/workflows/](../.github/workflows/) |
 
 ---
 
@@ -27,21 +27,21 @@ DSVPWA-Fork der Studierenden hingehören:
 .github/workflows/
 ├── aufgabe1-sast-sca.yml                           # Auftrag 3: Snyk SCA + Snyk Code (SAST)
 ├── aufgabe2-dast.yml                               # Auftrag 3: App starten + OWASP ZAP Baseline
-└── tag12-praxis.yml                                # bildet die Aufträge hier beweisbar nach
+└── tag15-praxis.yml                                # bildet die Aufträge hier beweisbar nach
 DOKUMENTATION.md                                    # Auftrag 1 + 2: Befunde und Massnahmen
-tag12/
+tag15/
 ├── README.md                                       # diese Übersicht
 ├── verify.sh                                       # lokale Selbstkontrolle
-├── tag12_Praxisauftrag01.md                        # Musterlösung Auftrag 1 (SAST/SCA)
-├── tag12_Praxisauftrag02.md                        # Musterlösung Auftrag 2 (DAST)
-└── tag12_Praxisauftrag03.md                        # Musterlösung Auftrag 3 (CI/CD)
+├── tag15_Praxisauftrag01.md                        # Musterlösung Auftrag 1 (SAST/SCA)
+├── tag15_Praxisauftrag02.md                        # Musterlösung Auftrag 2 (DAST)
+└── tag15_Praxisauftrag03.md                        # Musterlösung Auftrag 3 (CI/CD)
 ```
 
 > **Hinweis:** `aufgabe1-sast-sca.yml` und `aufgabe2-dast.yml` gehören in den **DSVPWA-Fork** —
 > sie brauchen dessen Code und ein `SNYK_TOKEN`. Damit sie auf diesem Musterlösungs-Branch nicht
 > ins Leere laufen, sind sie auf `branches: [ "main" ]` begrenzt; im eigenen Fork ist `main` der
 > Default-Branch und sie starten bei jedem Push. Damit die Musterlösungen hier trotzdem beweisbar
-> grün laufen, bildet [`.github/workflows/tag12-praxis.yml`](../.github/workflows/tag12-praxis.yml)
+> grün laufen, bildet [`.github/workflows/tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml)
 > die Aufträge als eigene Jobs nach (DSVPWA klonen, starten, ZAP-Scan; Snyk optional).
 
 ---
@@ -51,8 +51,8 @@ tag12/
 ### Lokal
 
 ```bash
-bash tag12/verify.sh        # alle drei Aufträge
-bash tag12/verify.sh 3      # nur Auftrag 3
+bash tag15/verify.sh        # alle drei Aufträge
+bash tag15/verify.sh 3      # nur Auftrag 3
 ```
 
 Das Skript prüft ohne externe Accounts, dass die Musterlösungs-Dokumente und die
@@ -66,7 +66,7 @@ Workflow-Dateien vorhanden, gültig (YAML) und inhaltlich vollständig sind (Sny
 
 ### In GitHub Actions
 
-Nach einem Push auf dieses Repo läuft `tag12-praxis.yml`. Im Reiter **Actions** erscheinen:
+Nach einem Push auf dieses Repo läuft `tag15-praxis.yml`. Im Reiter **Actions** erscheinen:
 
 ```
 Auftrag 3 — Workflows prüfen             (YAML-Validierung)
@@ -92,6 +92,6 @@ hinterlegt ist (der Workflow bleibt trotzdem gültig).
 ---
 
 > Die DevSecOps-Pipeline für den **TechStyle Online-Shop** ist Teil des **Projekt-Blocks** und
-> liegt im Repo `techstyle` (Branch `day_12_solution`), nicht hier.
+> liegt im Repo `techstyle` (Branch `day_15_solution`), nicht hier.
 >
 > Online-Beispiellösung: <https://github.com/tbzdevops/tag11-dsvpwa-musterloesung>
