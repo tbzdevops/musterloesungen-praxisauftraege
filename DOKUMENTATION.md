@@ -1,8 +1,8 @@
-# Container-Pipeline — Tag 16 Praxis
+# Container-Pipeline — Tag 14 Praxis
 
 Dokumentation der dreistufigen Pipeline: **CI-Build** (Übung 1), **Push zu AWS ECR** (Übung 2)
 und **Deployment auf AWS ECS** (Übung 3). Die ausführlichen Musterlösungen stehen in
-[tag16/](tag16/).
+[tag14/](tag14/).
 
 ## Übung 1 — Automatisierter Build
 

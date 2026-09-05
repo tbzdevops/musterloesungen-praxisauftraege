@@ -1,6 +1,6 @@
-name: Tag 16 — Praxis-Musterlösungen
+name: Tag 14 — Praxis-Musterlösungen
 
-# Belegt die Container-Automatisierung von Tag 16.
+# Belegt die Container-Automatisierung von Tag 14.
 #   * uebung01-ci-build — Image bauen, Container starten, HTTP-Antwort prüfen (beweisbar grün)
 #   * validate-aws      — die ECR-/ECS-Workflows (Übung 2+3) sind gültiges YAML
 # aufgabe1/2/3.yml liegen im Wurzel-Ordner .github/workflows/, genau so wie im

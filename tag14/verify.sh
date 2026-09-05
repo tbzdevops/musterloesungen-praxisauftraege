@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Lokale Verifikation der Praxis-Übungen von Tag 16 (Container-Automatisierung).
+# Lokale Verifikation der Praxis-Übungen von Tag 14 (Container-Automatisierung).
 #
-#   bash tag16/verify.sh        # alle Übungen
-#   bash tag16/verify.sh 1      # nur Übung 1
+#   bash tag14/verify.sh        # alle Übungen
+#   bash tag14/verify.sh 1      # nur Übung 1
 #
 # Die Lösungsdateien liegen im Wurzel-Verzeichnis bzw. in .github/workflows/.
-# Prüft dieselben Schritte wie .github/workflows/tag16-praxis.yml. Ohne laufenden
+# Prüft dieselben Schritte wie .github/workflows/tag14-praxis.yml. Ohne laufenden
 # Docker-Daemon wird der Build/Run von Übung 1 übersprungen (läuft dann in CI).
 
 set -uo pipefail
@@ -80,11 +80,11 @@ main() {
     2) verify_uebung2 ;;
     3) verify_uebung3 ;;
     all) verify_uebung1; verify_uebung2; verify_uebung3 ;;
-    *) echo "Verwendung: bash tag16/verify.sh [1|2|3]"; exit 2 ;;
+    *) echo "Verwendung: bash tag14/verify.sh [1|2|3]"; exit 2 ;;
   esac
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "📊 Tag 16 Praxis — Zusammenfassung"
+  echo "📊 Tag 14 Praxis — Zusammenfassung"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "✅ Erfüllt:    $PASS"
   echo "❌ Fehlen:     $FAIL"
