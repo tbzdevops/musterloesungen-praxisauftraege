@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "flaskapp"
 version = "0.1.2"
-description = "Beispiel-Flask-Paket für den eigenen PyPI-Index auf GitHub Pages"
+description = "Beispiel-Flask-Paket für Artifact- und Registry-Workflows"
 readme = "README.md"
 authors = [ { name = "TBZ DevOps", email = "devops@example.com" } ]
 dependencies = [ "Flask>=2.2.5" ]

@@ -1,12 +1,9 @@
+```yaml
 name: Build & Upload Artifact
-
-# Auftrag 1: Baut das Paket und legt es als temporaeres Workflow-Artefakt ab.
-# Aufbewahrung standardmaessig 90 Tage, nur ueber die Actions-UI sichtbar.
 
 on:
   push:
     branches: [ main ]
-    paths: [ 'tag06/**' ]
   workflow_dispatch: {}
 
 jobs:
@@ -27,11 +24,11 @@ jobs:
           pip install build
 
       - name: Build (sdist + wheel)
-        working-directory: tag06
         run: python -m build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: python-dist
-          path: tag06/dist/*
+          path: dist/
+```

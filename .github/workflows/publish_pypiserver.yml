@@ -1,0 +1,37 @@
+name: Publish Package to pypiserver
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build package
+        working-directory: tag06
+        run: python -m build
+
+      - name: Publish package to pypiserver
+        env:
+          PYPISERVER_REPOSITORY_URL: ${{ secrets.PYPISERVER_REPOSITORY_URL }}
+          PYPISERVER_USERNAME: ${{ secrets.PYPISERVER_USERNAME }}
+          PYPISERVER_PASSWORD: ${{ secrets.PYPISERVER_PASSWORD }}
+        run: |
+          python -m twine upload \
+            --repository-url "$PYPISERVER_REPOSITORY_URL" \
+            --username "$PYPISERVER_USERNAME" \
+            --password "$PYPISERVER_PASSWORD" \
+            tag06/dist/*

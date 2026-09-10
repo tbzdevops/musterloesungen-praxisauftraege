@@ -1,110 +1,59 @@
-# Tag 06 - Artifact Management: Python-Paket & eigener PyPI-Index
+# Tag 06 - Artifact Management
 
-Musterlösung für die Praxisaufträge: Ein Python-(Flask-)Paket mit GitHub Actions
-bauen, zuerst als temporäres Artefakt speichern (Auftrag 1) und anschliessend in
-einen eigenen PyPI-Index auf GitHub Pages publizieren (Auftrag 2).
+Dieses Beispielprojekt zeigt zwei Wege für Python-Artefakte:
+
+1. Du baust ein Python-Paket und speicherst es mit `actions/upload-artifact` temporär im GitHub-Actions-Lauf.
+2. Du veröffentlichst dasselbe Paket mit `twine` in eine eigene `pypiserver` Registry.
+
+Als zusätzliche Variante beschreibt die Musterlösung, wie dasselbe Prinzip mit Azure DevOps Artifacts als verwaltetem Feed umgesetzt werden kann.
 
 ## Projektstruktur
 
-```
+```text
 tag06/
 ├── src/
 │   └── flaskapp/
 │       ├── __init__.py
 │       └── main.py
-├── .github/
-│   └── workflows/
-│       ├── build.yml            # Auftrag 1: Build + upload-artifact
-│       └── publish-pages.yml    # Auftrag 2: Publish in PyPI-Index auf GitHub Pages
 ├── pyproject.toml
 ├── .gitignore
 └── README.md
 ```
 
-## Dateien
-
-- **pyproject.toml** – Moderne Build-Konfiguration (PEP 517/518), src-Layout,
-  Paketname `flaskapp`, Version `0.1.0`.
-- **src/flaskapp/** – Minimale Flask-Anwendung mit `hello()` und einem
-  `run-flask` Console-Script als Entry Point.
-- **.github/workflows/build.yml** – *Auftrag 1*: Baut sdist + wheel und legt sie
-  mit `actions/upload-artifact` als temporäres Workflow-Artefakt ab
-  (nur in der Actions-UI sichtbar, Standard-Aufbewahrung 90 Tage).
-- **.github/workflows/publish-pages.yml** – *Auftrag 2*: Baut das Paket, kopiert
-  es in den `gh-pages` Branch und generiert mit
-  [`dumb-pypi`](https://github.com/chriskuehl/dumb-pypi) einen statischen
-  PEP-503-Index. Wird durch einen Git-Tag (`v*`) ausgelöst.
-
-## Auftrag 1: Temporäres Artefakt
-
-1. Repository mit diesen Dateien anlegen.
-2. Auf `main` pushen → Workflow `Build & Upload Artifact` startet.
-3. Unter **Actions → Run → Artifacts** das Paket `python-dist` herunterladen.
+## Lokaler Build
 
 ```bash
-# Lokal testen
 python -m pip install --upgrade pip build
 python -m build
 ```
 
-## Auftrag 2: Eigener PyPI-Index auf GitHub Pages
+Nach dem Build liegen die Paketdateien in `dist/`:
 
-### Einmalige Einrichtung
+- `.whl`
+- `.tar.gz`
 
-```bash
-# Leeren gh-pages Branch erstellen
-git switch --orphan gh-pages
-git commit --allow-empty -m "Initialize PyPI index"
-git push origin gh-pages
-git switch main
+## Workflow 1: Temporäres Artefakt
+
+Der Workflow `.github/workflows/build.yml` baut das Paket und speichert `tag06/dist/*` als GitHub-Actions-Artefakt.
+
+## Workflow 2: pypiserver
+
+Der Workflow `.github/workflows/publish_pypiserver.yml` baut das Paket und lädt es mit `twine` in eine eigene `pypiserver` Registry.
+
+Benötigte Secrets:
+
+```text
+PYPISERVER_REPOSITORY_URL = http://<ec2-host>:8080/
+PYPISERVER_USERNAME = demo
+PYPISERVER_PASSWORD = demo
 ```
 
-Dann in GitHub: **Settings → Pages → Source: "Deploy from a branch" →
-Branch: `gh-pages` / `/ (root)`** wählen.
-
-Index-URL danach: `https://<OWNER>.github.io/<REPO>/`
-
-> ⚠️ **Hinweis:** GitHub Pages Sites sind (ausser bei GitHub Enterprise) immer
-> **öffentlich** – auch bei privatem Repository. Keine Secrets oder internen
-> Code in die Pakete legen!
-
-### Veröffentlichung auslösen
+Das Paket kann danach über die Simple-Index-URL installiert werden:
 
 ```bash
-# Version in pyproject.toml sicherstellen (0.1.0), dann taggen und pushen
-git tag v0.1.0
-git push origin v0.1.0
+python -m pip install --index-url http://<ec2-host>:8080/simple/ flaskapp
 ```
 
-Der Workflow `Publish to PyPI Index on GitHub Pages` baut das Paket, aktualisiert
-den Index auf `gh-pages` und verifiziert die Installation.
+## Variante: Azure DevOps Artifacts
 
-### Paket konsumieren
-
-```bash
-pip install \
-  --index-url https://<OWNER>.github.io/<REPO>/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  flaskapp==0.1.0
-```
-
-- `--index-url` zeigt auf den eigenen Index auf GitHub Pages.
-- `--extra-index-url https://pypi.org/simple` lädt Abhängigkeiten (z. B. Flask)
-  weiterhin von PyPI.
-
-## Kein PAT / keine Secrets nötig
-
-Beide Workflows nutzen ausschliesslich den automatisch bereitgestellten
-`GITHUB_TOKEN`. Für Auftrag 2 genügt `permissions: contents: write`, um auf den
-`gh-pages` Branch zu pushen.
-
-## Troubleshooting
-
-| Problem | Ursache | Lösung |
-|---------|---------|--------|
-| 404 auf der Index-URL | Pages nicht aktiviert / Deployment läuft noch | Settings → Pages prüfen; ~1 Min. warten |
-| 403 beim Push auf gh-pages | `permissions: contents: write` fehlt | Permissions im Workflow-Job ergänzen |
-| Workflow startet nicht | Tag entspricht nicht dem Pattern `v*` | Tag-Namen prüfen (z. B. `v0.1.0`) |
-| Paket nicht gefunden beim Install | Falsche `--packages-url` oder Tippfehler | URL im Workflow und Paketname prüfen |
-| Abhängigkeiten nicht installierbar | Nur eigener Index konfiguriert | `--extra-index-url https://pypi.org/simple` ergänzen |
-| Version wird nicht aktualisiert | Gleiche Version erneut gebaut | Version in `pyproject.toml` erhöhen, neuen Tag pushen |
+Wenn du keinen eigenen Server betreiben willst, kannst du ein Python-Paket auch in einem Azure DevOps Artifacts Feed versioniert ablegen. Die Musterlösung `tag06_Praxisauftrag02.md` enthält dafür ein separates Workflow-Beispiel.
