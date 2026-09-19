@@ -1,46 +1,36 @@
 # Tag 12 – Praxis-Musterlösungen (AI in DevOps)
 
-AI entlang der DevOps-Kette: **AI-Assisted Development** (Auftrag 1), **Spec-Driven Development
-& ADR** (Auftrag 2), **AI in der CI/CD-Pipeline** (Auftrag 3) und **Prompt Injection** (Auftrag 4).
-Aufträge 1 und 2 sind lauffähiger, getesteter Python-Code; Auftrag 3 ist eine
-GitHub-Actions-Vorlage; Auftrag 4 ist eine Analyse-/Diskussionsübung.
+Die Praxis dauert **eine Lektion** und bereitet das Projekt vor: **Spec-Driven Development mit
+AI** (Auftrag 1) und **Prompt Injection** (Auftrag 2). Auftrag 1 ist lauffähiger, getesteter
+Python-Code; Auftrag 2 ist eine Analyseübung.
 
-| Auftrag | Thema | Erklärung | Lauffähiger Code |
-|---------|-------|-----------|------------------|
-| 📓 Auftrag 1 | AI-Assisted Development (Code kritisch prüfen) | [tag12_Praxisauftrag01.md](tag12_Praxisauftrag01.md) | [utils/validators.py](../utils/validators.py) |
-| 📓 Auftrag 2 | Spec-Driven Development & ADR | [tag12_Praxisauftrag02.md](tag12_Praxisauftrag02.md) | [discounts/validator.py](../discounts/validator.py) |
-| 📓 Auftrag 3 | AI in der CI/CD-Pipeline (PR-Feedback) | [tag12_Praxisauftrag03.md](tag12_Praxisauftrag03.md) | [.github/workflows/ai-review.yml](../.github/workflows/ai-review.yml) |
-| 📓 Auftrag 4 | Prompt Injection — Angriff & Verteidigung | [tag12_Praxisauftrag04.md](tag12_Praxisauftrag04.md) | Analyseübung (kein Code) |
+| Auftrag | Thema | Zeit | Erklärung | Lauffähiger Code |
+|---------|-------|------|-----------|------------------|
+| 📓 Auftrag 1 | Spec-Driven Development mit AI (Spec → AI → kritischer Review) | 25 Min | [tag12_Praxisauftrag01.md](tag12_Praxisauftrag01.md) | [discounts/validator.py](../discounts/validator.py) |
+| 📓 Auftrag 2 | Prompt Injection — Angriff & Verteidigung | 15 Min | [tag12_Praxisauftrag02.md](tag12_Praxisauftrag02.md) | Analyseübung (kein Code) |
+
+Der AI-Review-Workflow und der ADR gehören seit der Umstellung ins **Projekt** — ihre
+Musterlösung liegt im Repo `techstyle`, Branch `day_12_solution`.
 
 ---
 
 ## Aufbau
 
 Die Lösungsdateien liegen **genau dort, wo sie im eigenen Repo auch liegen müssen** — im
-Wurzel-Verzeichnis bzw. in `.github/workflows/`:
+Wurzel-Verzeichnis:
 
 ```
-utils/validators.py                             # Auftrag 1: validate_email (AI-Entwurf + Review)
-tests/test_validators.py                        # Auftrag 1: pytest-Tests
-specs/rabattcode.md                             # Auftrag 2: Spec zuerst
-discounts/validator.py                          # Auftrag 2: validate_discount_code
-tests/test_discount.py                          # Auftrag 2: Akzeptanzkriterien als Tests
-docs/adr/0001-rabattcode-validierung.md         # Auftrag 2: Architecture Decision Record
-requirements.txt                                # pytest
-.github/workflows/
-├── ai-review.yml                               # Auftrag 3: AI-Review bei Pull Requests
-└── tag12-praxis.yml                            # führt Auftrag 1+2 (pytest) beweisbar aus
-DOKUMENTATION.md                                # Auftrag 4: Prompt Injection
+specs/rabattcode.md                 # Auftrag 1: Spec zuerst
+discounts/validator.py              # Auftrag 1: validate_discount_code (nach Review korrigiert)
+tests/test_discount.py              # Auftrag 1: Akzeptanzkriterien + Randfälle aus dem Review
+requirements.txt                    # pytest
+DOKUMENTATION.md                    # Auftrag 1 + 2: Review des AI-Outputs, Prompt Injection
+.github/workflows/tag12-praxis.yml  # führt die Tests von Auftrag 1 beweisbar aus
 tag12/
-├── README.md                                   # diese Übersicht
-├── verify.sh                                   # lokale Selbstkontrolle
-└── tag12_Praxisauftrag0X.md                    # die vier Musterlösungs-Dokumente
+├── README.md                       # diese Übersicht
+├── verify.sh                       # lokale Selbstkontrolle
+└── tag12_Praxisauftrag0X.md        # die zwei Musterlösungs-Dokumente
 ```
-
-> **Hinweis:** `ai-review.yml` reagiert auf `pull_request` und braucht einen offenen PR — auf
-> einem reinen Push läuft er deshalb nicht an. Damit die Musterlösungen trotzdem beweisbar grün
-> sind, führt [`.github/workflows/tag12-praxis.yml`](../.github/workflows/tag12-praxis.yml)
-> die Tests von Auftrag 1+2 aus und validiert `ai-review.yml`.
 
 ---
 
@@ -49,27 +39,26 @@ tag12/
 ### Lokal
 
 ```bash
-bash tag12/verify.sh        # alle Aufträge
-bash tag12/verify.sh 2      # nur Auftrag 2
+bash tag12/verify.sh        # beide Aufträge
+bash tag12/verify.sh 1      # nur Auftrag 1
 ```
 
-Legt ein Wegwerf-Venv an, installiert `pytest` und führt die Tests der Aufträge aus. Erwartet:
+Legt ein Wegwerf-Venv an, installiert `pytest` und führt die Tests aus. Erwartet:
 
 ```
-✅ Erfüllt:    9
+✅ Erfüllt:    8
 ❌ Fehlen:     0
 ```
 
 ### In GitHub Actions
 
-Nach einem Push laufen im Reiter **Actions** zwei Jobs:
+Nach einem Push läuft im Reiter **Actions** der Job:
 
 ```
-Auftrag 1+2 — pytest (validate_email, validate_discount_code)   pytest grün
-Auftrag 3 — AI-Review-Workflow (YAML)                           Workflow validiert
+Auftrag 1 — pytest (validate_discount_code)   pytest grün
 ```
 
 ---
 
-> Die AI-/DevSecOps-Themen fürs **TechStyle**-Projekt liegen im Repo `techstyle`
-> (Branch `day_12_solution`), nicht hier.
+> Die Musterlösung fürs **TechStyle**-Projekt (AI-Review-Bot, ADR, Reflexion) liegt im Repo
+> `techstyle` (Branch `day_12_solution`), nicht hier.

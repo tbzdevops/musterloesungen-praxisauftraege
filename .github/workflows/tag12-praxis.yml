@@ -1,10 +1,9 @@
 name: Tag 12 — Praxis-Musterlösungen
 
-# Belegt, dass die AI-in-DevOps-Musterlösungen von Tag 12 laufen.
-#   * tests    — validate_email (Auftrag 1) und validate_discount_code (Auftrag 2),
-#                beide mit pytest im Wurzel-Verzeichnis
-#   * validate — der AI-Review-Workflow (Auftrag 3) ist gültiges YAML
-# Auftrag 4 (Prompt Injection) ist eine reine Analyse-/Diskussionsübung ohne Code.
+# Belegt, dass die AI-in-DevOps-Musterlösung von Tag 12 läuft.
+#   * tests — validate_discount_code (Auftrag 1): Akzeptanzkriterien der Spec
+#             plus Randfälle aus dem Review, mit pytest im Wurzel-Verzeichnis
+# Auftrag 2 (Prompt Injection) ist eine reine Analyseübung ohne Code.
 
 on:
   push:
@@ -15,7 +14,7 @@ permissions:
 
 jobs:
   tests:
-    name: Auftrag 1+2 — pytest (validate_email, validate_discount_code)
+    name: Auftrag 1 — pytest (validate_discount_code)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,23 +22,4 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
-      - run: pytest -q
-
-  auftrag03-validate:
-    name: Auftrag 3 — AI-Review-Workflow (YAML)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip install pyyaml
-      - name: Workflow ist gültiges YAML
-        run: |
-          python - <<'PY'
-          import yaml, pathlib
-          p = pathlib.Path(".github/workflows/ai-review.yml")
-          wf = yaml.safe_load(p.read_text())
-          assert "jobs" in wf and "ai-review" in wf["jobs"], "Job ai-review fehlt"
-          print("OK", p)
-          PY
+      - run: python -m pytest -q

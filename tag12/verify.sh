@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Lokale Verifikation der Praxis-Aufträge von Tag 12 (AI in DevOps).
 #
-#   bash tag12/verify.sh        # alle Aufträge
-#   bash tag12/verify.sh 2      # nur Auftrag 2
+#   bash tag12/verify.sh        # beide Aufträge
+#   bash tag12/verify.sh 1      # nur Auftrag 1
 #
 # Prüft dieselben Schritte wie .github/workflows/tag12-praxis.yml.
 
@@ -39,39 +39,23 @@ run_pytest() {
 }
 
 verify_auftrag1() {
-  head1 "Auftrag 1 — AI-Assisted Development"
-  [ -f "$REPO_DIR/utils/validators.py" ] \
-    && ok "utils/validators.py vorhanden" || nok "utils/validators.py fehlt"
-  run_pytest "$REPO_DIR" "validate_email: pytest läuft grün" tests/test_validators.py
+  head1 "Auftrag 1 — Spec-Driven Development mit AI"
+  local spec="$REPO_DIR/specs/rabattcode.md"
+  [ -f "$spec" ] && ok "Spec specs/rabattcode.md vorhanden" || nok "Spec fehlt"
+  grep -qiE '^#+ *out.of.scope' "$spec" 2>/dev/null \
+    && ok "Spec hat Ziel, Anforderungen, Akzeptanzkriterien, Out of Scope" || nok "Spec unvollständig"
+  [ -f "$REPO_DIR/discounts/validator.py" ] \
+    && ok "discounts/validator.py vorhanden" || nok "discounts/validator.py fehlt"
+  run_pytest "$REPO_DIR" "validate_discount_code: pytest läuft grün" tests/
 }
 
 verify_auftrag2() {
-  head1 "Auftrag 2 — Spec-Driven Development & ADR"
-  run_pytest "$REPO_DIR" "validate_discount_code: pytest läuft grün" tests/test_discount.py
-  [ -f "$REPO_DIR/specs/rabattcode.md" ] \
-    && ok "Spec specs/rabattcode.md vorhanden" || nok "Spec fehlt"
-  [ -f "$REPO_DIR/docs/adr/0001-rabattcode-validierung.md" ] \
-    && ok "ADR 0001 vorhanden" || nok "ADR fehlt"
-}
-
-verify_auftrag3() {
-  head1 "Auftrag 3 — AI in der CI/CD-Pipeline"
-  local wf="$REPO_DIR/.github/workflows/ai-review.yml"
-  if [ ! -f "$wf" ]; then nok "ai-review.yml fehlt"; return; fi
-  if command -v python3 >/dev/null 2>&1 && python3 -c "import yaml" >/dev/null 2>&1; then
-    python3 -c "import yaml; yaml.safe_load(open('$wf'))" >/dev/null 2>&1 \
-      && ok "ai-review.yml ist gültiges YAML" || nok "ai-review.yml ist ungültiges YAML"
-  else
-    echo "⏭️  YAML-Prüfung übersprungen (PyYAML nicht installiert)"
-  fi
-  grep -q 'pull-requests: write' "$wf" && ok "Workflow hat pull-requests: write" || nok "Berechtigung fehlt"
-}
-
-verify_auftrag4() {
-  head1 "Auftrag 4 — Prompt Injection (Analyseübung)"
-  local doc="$BASE_DIR/tag12_Praxisauftrag04.md"
-  [ -f "$doc" ] && ok "Musterlösung tag12_Praxisauftrag04.md vorhanden" || nok "Doku fehlt"
-  grep -q 'Prompt' "$doc" 2>/dev/null && ok "Doku behandelt Prompt Injection" || nok "Doku unvollständig"
+  head1 "Auftrag 2 — Prompt Injection (Analyseübung)"
+  local doc="$REPO_DIR/DOKUMENTATION.md"
+  [ -f "$doc" ] && ok "DOKUMENTATION.md vorhanden" || nok "DOKUMENTATION.md fehlt"
+  grep -qiE '^## *Auftrag 2' "$doc" 2>/dev/null && ok "Abschnitt Auftrag 2 vorhanden" || nok "Abschnitt Auftrag 2 fehlt"
+  grep -q '^```' "$doc" 2>/dev/null && ok "Gehärteter System-Prompt als Codeblock" || nok "Codeblock fehlt"
+  grep -qi 'diff' "$doc" 2>/dev/null && ok "Transfer auf den PR-Diff beschrieben" || nok "Transfer fehlt"
 }
 
 main() {
@@ -79,10 +63,8 @@ main() {
   case "$target" in
     1) verify_auftrag1 ;;
     2) verify_auftrag2 ;;
-    3) verify_auftrag3 ;;
-    4) verify_auftrag4 ;;
-    all) verify_auftrag1; verify_auftrag2; verify_auftrag3; verify_auftrag4 ;;
-    *) echo "Verwendung: bash tag12/verify.sh [1|2|3|4]"; exit 2 ;;
+    all) verify_auftrag1; verify_auftrag2 ;;
+    *) echo "Verwendung: bash tag12/verify.sh [1|2]"; exit 2 ;;
   esac
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
