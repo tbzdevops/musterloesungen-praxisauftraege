@@ -7,7 +7,7 @@
     - name: Apply updated Security Group rules in tag07
       ansible.builtin.command:
         cmd: terraform apply -auto-approve
-        chdir: "../tag07"
+        chdir: "tag07"
       register: tf_output
       changed_when: "'1 added' in tf_output.stdout or '1 changed' in tf_output.stdout or 'Apply complete!' in tf_output.stdout"
 
