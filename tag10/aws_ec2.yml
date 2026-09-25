@@ -1,0 +1,25 @@
+---
+# AWS EC2 Dynamic Inventory Plugin Configuration
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+
+# Filter for active EC2 instances with Name tag matching sonarqube or sonarqube-server
+filters:
+  instance-state-name: running
+  tag:Name:
+    - sonarqube
+    - sonarqube-server
+
+# Set hostname preference for inventory targets
+hostnames:
+  - ip-address
+  - dns-name
+  - tag:Name
+
+# Group instances based on tags
+keyed_groups:
+  - key: tags.Name
+    prefix: tag_Name
+  - key: tags.Name
+    separator: ''

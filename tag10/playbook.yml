@@ -1,0 +1,77 @@
+---
+- name: Step 1 - Update AWS Security Group via Terraform
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Apply updated Security Group rules in tag07
+      ansible.builtin.command:
+        cmd: terraform apply -auto-approve
+        chdir: "../tag07"
+      register: tf_output
+      changed_when: "'1 added' in tf_output.stdout or '1 changed' in tf_output.stdout or 'Apply complete!' in tf_output.stdout"
+
+    - name: Display Terraform output
+      ansible.builtin.debug:
+        var: tf_output.stdout_lines
+
+- name: Step 2 - Setup Monitoring Environment (cAdvisor, Prometheus, Grafana) on SonarQube VM
+  hosts: tag_Name_sonarqube:tag_Name_sonarqube_server:sonarqube:sonarqube_server:all
+  become: yes
+  vars:
+    repo_url: "https://gitlab.com/ser-cal/m169-scripts.git"
+    clone_dest: "/home/ubuntu/m169-scripts"
+    monitoring_dir: "/home/ubuntu/m169-scripts/KN05_B"
+    app_user: "ubuntu"
+
+  tasks:
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages (Git, Docker, Docker Compose)
+      ansible.builtin.apt:
+        name:
+          - git
+          - docker.io
+          - docker-compose-v2
+          - curl
+        state: present
+
+    - name: Ensure Docker service is running and enabled
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure user belongs to docker group
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        groups: docker
+        append: yes
+
+    - name: Clone m169-scripts repository from GitLab
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ clone_dest }}"
+        version: main
+        force: yes
+
+    - name: Ensure correct file ownership for cloned repo
+      ansible.builtin.file:
+        path: "{{ clone_dest }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        recurse: yes
+
+    - name: Start Monitoring Stack with Docker Compose (cAdvisor, Prometheus, Grafana)
+      ansible.builtin.command:
+        cmd: docker compose up -d
+        chdir: "{{ monitoring_dir }}"
+      register: compose_output
+      changed_when: "'Created' in compose_output.stdout or 'Started' in compose_output.stdout or 'Recreated' in compose_output.stdout"
+
+    - name: Display status of Docker Compose stack deployment
+      ansible.builtin.debug:
+        var: compose_output.stdout_lines
