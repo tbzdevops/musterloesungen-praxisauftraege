@@ -1,0 +1,84 @@
+# Prometheus Configuration with AWS EC2 Service Discovery (ec2_sd_configs)
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # AWS EC2 Automatic Service Discovery
+  - job_name: 'ec2-nodes'
+    # Scrape target port (Node Exporter default is 9100)
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+    ec2_sd_configs:
+      # Target AWS region
+      - region: 'us-east-1'
+        port: 9100
+        # Wichtig: die Rolle Labrole in der Sonarqube-Instanz setzen unter Security Credentials -> IAM Role
+        
+        # Filter instances directly via AWS API call
+        filters:
+          - name: instance-state-name
+            values: ['running']
+          # Optional: filter by EC2 tags
+          - name: tag:Monitoring
+            values: ['true']
+
+    # Relabeling rules to format instance labels in Prometheus
+    relabel_configs:
+      # Nur Instanzen behalten, die tatsächlich eine öffentliche IP besitzen
+      - source_labels: [__meta_ec2_public_ip]
+        regex: (.+)
+        action: keep
+
+      # Das Scrape-Ziel (__address__) explizit auf Public-IP:9100 setzen
+      - source_labels: [__meta_ec2_public_ip]
+        target_label: __address__
+        replacement: '${1}:9100'
+      # Keep only instances that are in 'running' state
+      - source_labels: [__meta_ec2_instance_state]
+        regex: running
+        action: keep
+
+      # Use EC2 Tag 'Name' as Prometheus 'instance' label if available
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
+        regex: (.+)
+        replacement: ${1}
+
+      # Map EC2 Instance ID to a custom Prometheus label
+      - source_labels: [__meta_ec2_instance_id]
+        target_label: instance_id
+
+      # Map Availability Zone
+      - source_labels: [__meta_ec2_availability_zone]
+        target_label: availability_zone
+
+      # Map Instance Type
+      - source_labels: [__meta_ec2_instance_type]
+        target_label: instance_type
+
+      # Map Private IP Address
+      - source_labels: [__meta_ec2_private_ip]
+        target_label: private_ip
+
+      # Map EC2 Tags to Prometheus labels (e.g., Environment tag)
+      - source_labels: [__meta_ec2_tag_Environment]
+        target_label: environment
+        regex: (.+)
+
+      # Optional: Scrape private IP instead of public IP if running inside VPC
+      # - source_labels: [__meta_ec2_private_ip]
+      #   target_label: __address__
+      #   replacement: '${1}:9100'
