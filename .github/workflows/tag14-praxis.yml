@@ -1,12 +1,11 @@
-name: Tag 14 — Praxis-Musterlösungen
+name: Tag 14 — Praxis-Musterlösung
 
-# Belegt die Container-Automatisierung von Tag 14.
-#   * uebung01-ci-build — Image bauen, Container starten, HTTP-Antwort prüfen (beweisbar grün)
-#   * validate-aws      — die ECR-/ECS-Workflows (Übung 2+3) sind gültiges YAML
-# aufgabe1/2/3.yml liegen im Wurzel-Ordner .github/workflows/, genau so wie im
-# eigenen Repo der Studierenden. Sie sind auf 'branches: [main]' begrenzt und
-# laufen deshalb auf diesem Loesungs-Branch nicht an — Uebung 2 und 3 brauchen
-# ausserdem AWS-Secrets. Dieser Workflow baut/testet Uebung 1 hier beweisbar.
+# Belegt den automatisierten Container-Build von Tag 14: Image bauen,
+# Container starten, HTTP-Antwort prüfen.
+# aufgabe1.yml liegt im Wurzel-Ordner .github/workflows/, genau so wie im
+# eigenen Repo der Studierenden. Er ist auf 'branches: [main]' begrenzt und
+# läuft deshalb auf diesem Lösungs-Branch nicht an. Dieser Workflow führt
+# dieselben Schritte hier beweisbar aus.
 
 on:
   push:
@@ -16,8 +15,8 @@ permissions:
   contents: read
 
 jobs:
-  uebung01-ci-build:
-    name: Übung 1 — CI-Build (Image + Test)
+  uebung-ci-build:
+    name: CI-Build (Image + Test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,29 +30,3 @@ jobs:
           echo "Antwort: $BODY"
           echo "$BODY" | grep -q "Hello, World!"
           docker stop test-container
-
-  validate-aws-workflows:
-    name: Übung 2/3 — AWS-Workflows (YAML)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip install pyyaml
-      - name: Workflows sind gültiges YAML
-        run: |
-          python - <<'PY'
-          import yaml, pathlib
-          base = pathlib.Path(".github/workflows")
-          for name in ["aufgabe1.yml", "aufgabe2.yml", "aufgabe3.yml"]:
-              wf = yaml.safe_load((base / name).read_text())
-              assert "jobs" in wf, f"{name}: jobs fehlt"
-              print("OK", name)
-          # Pflicht-Bausteine der AWS-Workflows
-          ecr = (base / "aufgabe2.yml").read_text()
-          ecs = (base / "aufgabe3.yml").read_text()
-          assert "amazon-ecr-login" in ecr, "ECR-Login fehlt in aufgabe2"
-          assert "amazon-ecs-deploy-task-definition" in ecs, "ECS-Deploy fehlt in aufgabe3"
-          print("OK  AWS-Bausteine vorhanden")
-          PY

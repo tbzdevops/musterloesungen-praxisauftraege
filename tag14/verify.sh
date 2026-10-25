@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Lokale Verifikation der Praxis-Übungen von Tag 14 (Container-Automatisierung).
+# Lokale Verifikation der Praxis-Übung von Tag 14 (automatisierter Container-Build).
 #
-#   bash tag14/verify.sh        # alle Übungen
-#   bash tag14/verify.sh 1      # nur Übung 1
+#   bash tag14/verify.sh
 #
 # Die Lösungsdateien liegen im Wurzel-Verzeichnis bzw. in .github/workflows/.
 # Prüft dieselben Schritte wie .github/workflows/tag14-praxis.yml. Ohne laufenden
-# Docker-Daemon wird der Build/Run von Übung 1 übersprungen (läuft dann in CI).
+# Docker-Daemon wird der Build/Run übersprungen (läuft dann in CI).
 
 set -uo pipefail
 
@@ -34,7 +33,7 @@ yaml_valid() {
 }
 
 verify_uebung1() {
-  head1 "Übung 1 — CI-Build (Image + Test)"
+  head1 "CI-Build (Image + Test)"
   local dir="$REPO_DIR"
   [ -f "$dir/app.py" ]           && ok "app.py (Flask) vorhanden"   || nok "app.py fehlt"
   [ -f "$dir/requirements.txt" ] && ok "requirements.txt vorhanden" || nok "requirements.txt fehlt"
@@ -57,31 +56,19 @@ verify_uebung1() {
   fi
 }
 
-verify_uebung2() {
-  head1 "Übung 2 — Push zu AWS ECR"
-  yaml_valid "$WF_DIR/aufgabe2.yml" "aufgabe2.yml ist gültiges YAML"
-  grep -q 'amazon-ecr-login' "$WF_DIR/aufgabe2.yml" 2>/dev/null \
-    && ok "Workflow nutzt amazon-ecr-login" || nok "ECR-Login fehlt"
-  grep -q 'push: true' "$WF_DIR/aufgabe2.yml" 2>/dev/null \
-    && ok "Workflow pusht das Image (push: true)" || nok "push: true fehlt"
-}
-
-verify_uebung3() {
-  head1 "Übung 3 — Deployment auf AWS ECS"
-  yaml_valid "$WF_DIR/aufgabe3.yml" "aufgabe3.yml ist gültiges YAML"
-  grep -q 'amazon-ecs-deploy-task-definition' "$WF_DIR/aufgabe3.yml" 2>/dev/null \
-    && ok "Workflow deployt auf ECS" || nok "ECS-Deploy-Schritt fehlt"
+verify_doku() {
+  head1 "Dokumentation"
+  local doc="$REPO_DIR/DOKUMENTATION.md"
+  if [ -f "$doc" ] && [ "$(wc -w < "$doc")" -ge 80 ]; then
+    ok "DOKUMENTATION.md vorhanden (mind. 80 Wörter)"
+  else
+    nok "DOKUMENTATION.md fehlt oder hat weniger als 80 Wörter"
+  fi
 }
 
 main() {
-  local target="${1:-all}"
-  case "$target" in
-    1) verify_uebung1 ;;
-    2) verify_uebung2 ;;
-    3) verify_uebung3 ;;
-    all) verify_uebung1; verify_uebung2; verify_uebung3 ;;
-    *) echo "Verwendung: bash tag14/verify.sh [1|2|3]"; exit 2 ;;
-  esac
+  verify_uebung1
+  verify_doku
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "📊 Tag 14 Praxis — Zusammenfassung"

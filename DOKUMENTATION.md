@@ -1,35 +1,25 @@
 # Container-Pipeline — Tag 14 Praxis
 
-Dokumentation der dreistufigen Pipeline: **CI-Build** (Übung 1), **Push zu AWS ECR** (Übung 2)
-und **Deployment auf AWS ECS** (Übung 3). Die ausführlichen Musterlösungen stehen in
-[tag14/](tag14/).
+Dokumentation der CI-Pipeline [`.github/workflows/aufgabe1.yml`](.github/workflows/aufgabe1.yml). Die ausführliche Musterlösung steht in [tag14/](tag14/).
 
-## Übung 1 — Automatisierter Build
+## Welche Schritte führt die Pipeline aus, und in welcher Reihenfolge?
 
-[`.github/workflows/aufgabe1.yml`](.github/workflows/aufgabe1.yml) baut bei jedem Push auf `main`
-das Container-Image aus dem [Dockerfile](Dockerfile) und testet es sofort: Der Container wird
-gestartet und per `curl` gegen Port 8080 geprüft, ob die Flask-App mit `Hello, World!` antwortet.
-Wichtig ist `load: true` in der `docker/build-push-action` — ohne diesen Schalter landet das Image
-nur im Buildx-Cache und `docker run` findet es nicht.
+Bei jedem Push auf `main` startet ein Linux-Runner den Job `build`:
 
-## Übung 2 — Container Registry (ECR)
+1. **Checkout:** `actions/checkout` holt den Code auf den Runner.
+2. **Buildx einrichten:** `docker/setup-buildx-action` stellt das Werkzeug zum Bauen bereit.
+3. **Image bauen:** `docker/build-push-action` baut aus dem [Dockerfile](Dockerfile) das Image `hello-docker-ci:latest`, ohne es hochzuladen (`push: false`).
+4. **Container testen:** `docker run` startet den Container auf Port 8080, `curl` ruft die Startseite auf und `grep` prüft, ob `Hello, World!` zurückkommt. Danach wird der Container gestoppt.
 
-[`.github/workflows/aufgabe2.yml`](.github/workflows/aufgabe2.yml) meldet sich mit
-`aws-actions/configure-aws-credentials` und `aws-actions/amazon-ecr-login` an der Registry an und
-pusht das Image (`push: true`). Die Zugangsdaten liegen als Repository-Secrets vor:
-`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_ACCOUNT_ID` und
-`ECR_REPOSITORY` — nie im Code.
+Schlägt ein Schritt fehl, wird der Lauf rot. Ein Commit mit geändertem Antworttext hat das bestätigt.
 
-## Übung 3 — Continuous Deployment (ECS)
+## Warum ist `load: true` nötig?
 
-[`.github/workflows/aufgabe3.yml`](.github/workflows/aufgabe3.yml) baut und pusht das Image mit
-dem Commit-SHA als Tag, lädt die aktuelle ECS-Task-Definition, ersetzt darin die Image-URI und
-deployt sie mit `amazon-ecs-deploy-task-definition`. `wait-for-service-stability: true` sorgt
-dafür, dass der Workflow erst grün wird, wenn der Service tatsächlich stabil läuft.
+Buildx baut in einem eigenen Builder-Container. Ohne `load: true` bleibt das Image dort im Build-Cache und landet nicht im lokalen Docker des Runners. `docker run` im nächsten Schritt würde das Image dann nicht finden und versuchen, es aus Docker Hub zu laden.
 
-## Erkenntnis
+## Welche zwei Schritte fehlen noch bis zum laufenden Container in der Cloud?
 
-Die drei Workflows bilden die vollständige Kette **Build → Registry → Deployment** ab. Der
-unveränderliche Image-Tag (Commit-SHA) macht jedes Deployment nachvollziehbar und ein Rollback zu
-einer früheren Version möglich. Übung 2 und 3 brauchen ein AWS-Konto mit ECR-Repository und
-ECS-Cluster; ohne die Secrets laufen sie nicht an.
+1. **Image Registry:** Das getestete Image muss mit eindeutigem Tag (z. B. Commit-SHA) in eine Registry wie AWS ECR gepusht werden.
+2. **Deployment:** Ein Server oder Orchestrator (EC2 mit Docker Compose, AWS ECS) muss genau dieses Image ziehen und starten.
+
+Beide Schritte setzt das Projekt am TechStyle-Shop um.

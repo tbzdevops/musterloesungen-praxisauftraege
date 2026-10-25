@@ -1,4 +1,4 @@
-# Musterlösung – Übung 1: Automatisierter Build mit GitHub Actions (CI)
+# Musterlösung – Automatisierter Build mit GitHub Actions (CI)
 
 **Ziel:** Eine CI-Pipeline, die bei jedem Push das Docker-Image der App baut und mit einem
 Container-Test prüft.
@@ -83,5 +83,5 @@ Bei Erfolg ist die Pipeline grün: Das Image ist buildbar und die App antwortet 
 ## Ergebnis
 
 - Vollständige CI-Pipeline für ein Container-Image.
-- Bei jedem Push wird automatisch gebaut und getestet — Grundlage für Registry-Push (Übung 2)
-  und Deployment (Übung 3).
+- Bei jedem Push wird automatisch gebaut und getestet — Grundlage für Registry-Push (AWS ECR)
+  und Deployment (AWS EC2), die das Projekt am TechStyle-Shop umsetzt.
