@@ -65,7 +65,8 @@ jobs:
           done
       - name: Angriff vergleichen
         run: |
-          users() { curl -s "http://127.0.0.1:$1/users?id=$2" | grep -c "<tr><td>[0-9]" || true; }
+          # DSVPWA schreibt alle Tabellenzeilen in eine Zeile: Treffer zählen, nicht Zeilen
+          users() { curl -s "http://127.0.0.1:$1/users?id=$2" | grep -o "<tr><td>[0-9]*</td>" | wc -l; }
           before=$(users 65413 "1%20OR%201=1"); after=$(users 65414 "1%20OR%201=1"); normal=$(users 65414 1)
           echo "Original,  id=1 OR 1=1: $before Benutzer"
           echo "Mit Fix,   id=1 OR 1=1: $after Benutzer"

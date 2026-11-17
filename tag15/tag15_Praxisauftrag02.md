@@ -26,17 +26,27 @@ docker run --rm --network host -t zaproxy/zap-stable zap-baseline.py -t http://l
 docker run --rm -t zaproxy/zap-stable zap-baseline.py -t http://host.docker.internal:65413
 ```
 
-Der Baseline-Scan crawlt die Seiten (Spider, standardmässig 1 Minute) und wertet die Antworten **passiv** aus. Er schickt keine Angriffs-Payloads. Am Ende stehen Zeilen wie:
+Der Baseline-Scan crawlt die Seiten (Spider, standardmässig 1 Minute) und wertet die Antworten **passiv** aus. Er schickt keine Angriffs-Payloads. Ergebnis des Laufs vom 17.11.2026 (`zaproxy/zap-stable`, 34 URLs):
 
 ```text
-WARN-NEW: Content Security Policy (CSP) Header Not Set [10038] x 4
-WARN-NEW: Missing Anti-clickjacking Header [10020] x 4
-WARN-NEW: X-Content-Type-Options Header Missing [10021] x 6
-WARN-NEW: Server Leaks Version Information via "Server" HTTP Response Header Field [10036] x 8
-FAIL-NEW: 0    FAIL-INPROG: 0    WARN-NEW: ...    PASS: ...
+WARN-NEW: Cookie No HttpOnly Flag [10010] x 5
+WARN-NEW: Missing Anti-clickjacking Header [10020] x 5
+WARN-NEW: X-Content-Type-Options Header Missing [10021] x 5
+WARN-NEW: Information Disclosure - Sensitive Information in URL [10024] x 2
+WARN-NEW: User Controllable HTML Element Attribute (Potential XSS) [10031] x 1
+WARN-NEW: Server Leaks Version Information via "Server" HTTP Response Header Field [10036] x 5
+WARN-NEW: Storable and Cacheable Content [10049] x 5
+WARN-NEW: Cookie without SameSite Attribute [10054] x 5
+WARN-NEW: CSP: Failure to Define Directive with No Fallback [10055] x 8
+WARN-NEW: Permissions Policy Header Not Set [10063] x 5
+WARN-NEW: Modern Web Application [10109] x 1
+WARN-NEW: Authentication Request Identified [10111] x 1
+WARN-NEW: Session Management Response Identified [10112] x 12
+WARN-NEW: Cross-Origin-Embedder-Policy Header Missing or Invalid [90004] x 9
+FAIL-NEW: 0	FAIL-INPROG: 0	WARN-NEW: 14	WARN-INPROG: 0	INFO: 0	IGNORE: 0	PASS: 54
 ```
 
-Die genaue Liste hängt von der ZAP-Version ab. Den echten Lauf zeigt der Job «P2 — DAST (OWASP ZAP)» in [`.github/workflows/tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml).
+Im HTML-Bericht (`-r zap-report.html`) haben die Alerts eine Risikostufe: **Medium** sind die CSP-Alerts (u.a. «CSP: Wildcard Directive») und «Missing Anti-clickjacking Header», **Low** sind die Cookie-Flags, `X-Content-Type-Options`, der `Server`-Header und die Cross-Origin-Header. Keine SQL-Injection, kein «FAIL». Die genaue Liste hängt von der ZAP-Version ab. Den aktuellen Lauf zeigt der Job «P2 — DAST (OWASP ZAP Baseline)» in [`.github/workflows/tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml), der Bericht liegt dort als Artefakt.
 
 ## 3. Zwei Alerts dokumentieren
 
@@ -87,5 +97,5 @@ SAST sieht den Code, aber nicht die HTTP-Antwort. DAST sieht die HTTP-Antwort, a
 |---------|--------|
 | ZAP meldet `Connection refused` | Auf Docker Desktop `host.docker.internal` statt `localhost` verwenden, unter Linux `--network host` |
 | Scan findet nur eine Seite | App läuft nicht oder falscher Port: `curl http://localhost:65413/` prüfen |
-| `zaproxy/zap-stable` lädt lange | Das Image ist ca. 1.5 GB gross. Im Codespace dauert der erste Pull 1–2 Minuten |
+| `zaproxy/zap-stable` lädt lange | Das Image ist gross. Den Pull am besten schon in Praxis 1 mit `docker pull zaproxy/zap-stable` im Hintergrund starten |
 | Kein Docker verfügbar | ZAP-Desktop-App von <https://www.zaproxy.org/> und **Automated Scan** verwenden |

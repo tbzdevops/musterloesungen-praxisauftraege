@@ -12,8 +12,8 @@ Musterlösung zum Praxisauftrag von Tag 15 an der Übungsanwendung DSVPWA. Die D
 ## P2 – OWASP ZAP (DAST)
 | # | Alert | Risiko | Betroffene URL | Behebung |
 |---|-------|--------|----------------|----------|
-| 1 | Content Security Policy (CSP) Header Not Set bzw. CSP: Wildcard Directive (`default-src * 'unsafe-inline'`) | Medium | `http://localhost:65413/` und alle Seiten | Restriktive CSP setzen, z.B. `default-src 'self'`, ohne `'unsafe-inline'` |
-| 2 | Missing Anti-clickjacking Header (`X-Frame-Options` fehlt) | Medium | `http://localhost:65413/` und alle Seiten | Header `X-Frame-Options: DENY` oder CSP-Direktive `frame-ancestors 'none'` setzen |
+| 1 | CSP: Wildcard Directive [10055]: Die Seite sendet `Content-Security-Policy: default-src * 'unsafe-inline'` | Medium | `http://localhost:65413/` | Restriktive CSP setzen, z.B. `default-src 'self'; frame-ancestors 'none'`, ohne `*` und ohne `'unsafe-inline'` |
+| 2 | Missing Anti-clickjacking Header [10020]: `X-Frame-Options` fehlt, die Seiten lassen sich in fremde Frames einbetten | Medium | `http://localhost:65413/`, `/login`, `/users`, `/jump` | Header `X-Frame-Options: DENY` setzen oder die CSP-Direktive `frame-ancestors 'none'` ergänzen |
 
 ### Verifizierte SQL-Injection
 - Request: `curl "http://localhost:65413/users?id=1"` liefert einen Benutzer (`admin`). `curl "http://localhost:65413/users?id=1%20OR%201=1"` liefert alle vier Benutzer (`admin`, `guest`, `loella`, `weitzel`).
@@ -22,9 +22,9 @@ Musterlösung zum Praxisauftrag von Tag 15 an der Übungsanwendung DSVPWA. Die D
 ### Vergleich
 | Nur SAST gefunden | Nur DAST gefunden |
 |-------------------|-------------------|
-| SQL-Injection in `/users` (Zeile 39) und im Login (Zeile 289): Der Baseline-Scan schickt keine Payloads | Fehlende oder zu offene Security-Header (CSP, `X-Frame-Options`, `X-Content-Type-Options`): Sie entstehen erst in der HTTP-Antwort |
-| Command Injection (Zeile 167): bei `--risk 1` für einen Scanner gar nicht erreichbar | `Server`-Header verrät Python-Version: Information Leak zur Laufzeit |
-| Unsichere Deserialisierung mit `pickle` (Zeile 199) | Session-Cookie ohne `HttpOnly`- und `SameSite`-Flag |
+| SQL-Injection in `/users` (Zeile 39) und im Login (Zeile 289): Der Baseline-Scan schickt keine Payloads | Fehlende oder zu offene Security-Header (CSP-Wildcard, `X-Frame-Options`, `X-Content-Type-Options`, Permissions-Policy): Sie entstehen erst in der HTTP-Antwort |
+| Command Injection (Zeile 167): bei `--risk 1` für einen Scanner gar nicht erreichbar | `Server`-Header verrät die Python-Version (`BaseHTTP/0.6 Python/3.12…`) |
+| Unsichere Deserialisierung mit `pickle` (Zeile 199) | Session-Cookie `SESSIONID` ohne `HttpOnly`- und `SameSite`-Flag |
 | SCA: veraltete Bibliotheken mit bekannten CVEs, auch wenn sie nicht genutzt werden | |
 
 **Fazit:** SAST zeigt die Ursache mit Datei und Zeile, DAST zeigt, was im Betrieb tatsächlich sichtbar und ausnutzbar ist. Ein grüner Baseline-Scan heisst nicht, dass keine Injection-Lücken existieren. Darum braucht es beide Verfahren.
