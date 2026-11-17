@@ -1,126 +1,51 @@
-# Musterlösung – Auftrag 3: Security-Scans in die CI/CD-Pipeline einbauen
+# Musterlösung – P3 (für Schnelle) Fix und Re-Scan
 
-**Ziel:** Die Erkenntnisse aus Auftrag 1 (SAST/SCA) und Auftrag 2 (DAST) in **GitHub Actions**
-automatisieren. Bei jedem Push auf `main` laufen die Security-Checks – eine kleine
-DevSecOps-Pipeline.
+**Phase:** Praxis 2, für alle, die mit P2 fertig sind | **Zeit:** 10 Min | **Format:** Einzelarbeit
 
----
-
-## 1. Voraussetzungen
-
-1. DSVPWA-Fork liegt auf GitHub, **Actions aktiviert**.
-2. Snyk-API-Token als Repository-Secret hinterlegen:
-   *Settings → Secrets and variables → Actions → New repository secret*
-   - Name: `SNYK_TOKEN`
-   - Value: Token aus *Snyk → Account Settings → General → Auth Token*
-3. Für die Issue-/SARIF-Funktionen: *Settings → Actions → General → Workflow permissions →
-   Read and write permissions*.
+**Ziel:** Beweisen, dass die SQL-Injection aus P2 wirklich geschlossen ist: mit dem Angriff und mit einem erneuten Scan.
 
 ---
 
-## 2. Workflow 1 – SAST + SCA mit Snyk
+## 1. Query parametrisieren
 
-Datei: **`.github/workflows/aufgabe1-sast-sca.yml`** (vollständige Datei liegt als
-[aufgabe1-sast-sca.yml](../.github/workflows/aufgabe1-sast-sca.yml) bei).
+`dsvpwa/attacks.py`, Zeile 39:
 
-Kernpunkte:
-
-```yaml
-on:
-  push:
-    branches: [ "main" ]   # im eigenen Fork ist main der Default-Branch
-  workflow_dispatch:
-
-jobs:
-  snyk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      # SCA: Abhängigkeiten scannen (bricht bei High/Critical ab)
-      - name: Snyk Open Source (SCA)
-        uses: snyk/actions/python@master
-        continue-on-error: true        # weiterlaufen, damit SARIF hochgeladen wird
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --sarif-file-output=snyk-sca.sarif
-
-      # SARIF ins GitHub Security-Tab laden
-      - name: Upload SCA results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk-sca.sarif
-          category: snyk-sca
+```diff
+-            cursor.execute("SELECT id, username, firstname, lastname, email, session FROM users WHERE id=" + id)
++            cursor.execute("SELECT id, username, firstname, lastname, email, session FROM users WHERE id=?", (id,))
 ```
 
-- `--severity-threshold=high` → nur High/Critical lassen den Schritt scheitern.
-- `continue-on-error: true` → der Job läuft weiter, damit das SARIF auch bei Findings hochgeladen
-  wird (sonst bräche der Workflow vor dem Upload ab).
-- `snyk code test` (SAST) wird analog ergänzt und als zweites SARIF hochgeladen.
+Mit `?` übergibt `sqlite3` die Eingabe als **Wert**. Die Datenbank interpretiert `1 OR 1=1` nicht mehr als SQL, sondern sucht einen Benutzer mit genau dieser ID.
 
----
+## 2. Angriff wiederholen
 
-## 3. Workflow 2 – DAST mit OWASP ZAP
-
-Datei: **`.github/workflows/aufgabe2-dast.yml`** (vollständige Datei liegt als
-[aufgabe2-dast.yml](../.github/workflows/aufgabe2-dast.yml) bei).
-
-Kernidee: App **im Runner** starten, dann ZAP gegen `localhost` laufen lassen.
-
-```yaml
-      - name: Start Web App
-        run: |
-          pip install -r requirements.txt
-          python dsvpwa.py &
-          sleep 5
-
-      - name: ZAP Baseline DAST Scan
-        uses: zaproxy/action-baseline@v0.12.0
-        env:
-          GITHUB_TOKEN: ""             # Issue-Erstellung unterbinden (Permission-Fehler vermeiden)
-        with:
-          target: "http://127.0.0.1:65413"
-          fail_action: false
-          cmd_options: "-m 5"
-          allow_issue_writing: false
-```
-
-- `fail_action: false` → der Scan-Report soll informieren, den Build aber (im Kurs) nicht hart
-  brechen.
-- `GITHUB_TOKEN: ""` + `allow_issue_writing: false` → verhindert, dass die Action automatisch
-  GitHub-Issues anlegt (häufige Fehlerquelle wegen fehlender Rechte).
-
----
-
-## 4. Pipeline testen
+App neu starten (`Ctrl+C`, dann `python dsvpwa.py --host 0.0.0.0`):
 
 ```bash
-git add .github/workflows/aufgabe1-sast-sca.yml .github/workflows/aufgabe2-dast.yml
-git commit -m "DevSecOps: SAST/SCA und DAST Workflows"
+curl "http://localhost:65413/users?id=1"            # weiterhin: admin
+curl "http://localhost:65413/users?id=1%20OR%201=1" # jetzt: kein Benutzer
+```
+
+## 3. Erneut scannen
+
+```bash
+snyk code test
+```
+
+Das SQL-Injection-Finding an `dsvpwa/attacks.py:39` ist verschwunden. Die SQL-Injection im Login (Zeile 289) bleibt und wäre der nächste Fix. Das zeigt: Ein Re-Scan bestätigt einen Fix, ersetzt aber nicht die Triage der übrigen Findings.
+
+Ohne Snyk geht der Re-Scan auch mit Bandit:
+
+```bash
+bandit -r dsvpwa -t B608   # meldet nur noch Zeile 289
+```
+
+## 4. Committen
+
+```bash
+git add dsvpwa/attacks.py findings.md
+git commit -m "fix: SQL-Injection in /users mit parametrisiertem Query behoben"
 git push
 ```
 
-Unter **Actions** beobachten:
-
-- **Snyk-Job:** meldet verwundbare Abhängigkeiten / Codestellen; Findings erscheinen zusätzlich
-  unter **Security → Code scanning**.
-- **ZAP-Job:** startet die App, scannt sie, lädt den Report als Artefakt hoch.
-
----
-
-## 5. Interpretation & Ausblick
-
-- Bei jedem Push gibt es jetzt automatisiertes Security-Feedback – ein "Guard" gegen das
-  versehentliche Einführen verwundbarer Bibliotheken oder unsicherer Codestellen.
-- In echten Projekten erweiterbar um: Container-Image-Scan, IaC-Scan (Terraform), Slack-Reporting,
-  und einen ausführlichen DAST-Scan nur nachts / vor Releases (statt bei jedem Commit).
-
----
-
-## Ergebnis
-
-- Zwei lauffähige GitHub-Actions-Workflows (SAST/SCA + DAST).
-- `SNYK_TOKEN` als Secret konfiguriert, Severity-Threshold gesetzt.
-- Findings im GitHub Security-Tab sichtbar (SARIF-Upload).
-- Damit ist eine minimale, aber vollständige DevSecOps-CI/CD-Pipeline umgesetzt.
+Der Fix ist in diesem Branch umgesetzt, siehe [`dsvpwa/attacks.py`](../dsvpwa/attacks.py), Zeile 39. Der Job «P3 — Fix und Re-Scan» in [`.github/workflows/tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml) prüft ihn bei jedem Push: Er greift das unveränderte DSVPWA und diese Version mit demselben Request an und vergleicht die Antworten.

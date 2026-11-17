@@ -1,48 +1,40 @@
-# Tag 15 – Praxis-Musterlösungen (DevSecOps)
+# Tag 15 – Praxis-Musterlösung (DevSecOps)
 
-DevSecOps mit **Snyk** (SAST/SCA) und **OWASP ZAP** (DAST). Die drei Praxis-Aufträge bauen
-aufeinander auf: Zuerst wird der ruhende Code statisch geprüft (Auftrag 1), dann die laufende
-Anwendung dynamisch getestet (Auftrag 2), und schliesslich werden beide Prüfungen in eine
-GitHub-Actions-Pipeline automatisiert (Auftrag 3).
+DevSecOps mit **Snyk** (SCA und SAST) und **OWASP ZAP** (DAST) an der absichtlich verwundbaren Übungsanwendung **DSVPWA** (Damn Simple Vulnerable Python Web Application, <https://github.com/tbzdevops/DSVPWA>).
 
-Als Übungsobjekt dient die absichtlich verwundbare Anwendung **DSVPWA** (Damn Simple Vulnerable
-Python Web Application): <https://github.com/tbzdevops/DSVPWA>
+Die Praxis ist **Einzelarbeit** und läuft **nur lokal** mit den Tools. Sie besteht aus zwei Arbeitsphasen, die jeweils direkt auf einen Theorieblock folgen. Den Einbau in eine Pipeline machen die Gruppen anschliessend im Projekt am TechStyle-Shop (Repo `techstyle`, Branch `day_15_solution`).
 
-| Auftrag | Thema | Erklärung | Lauffähiger Code |
-|---------|-------|-----------|------------------|
-| 📓 Auftrag 1 | Statische Code-Analyse mit Snyk (SAST + SCA) | [tag15_Praxisauftrag01.md](tag15_Praxisauftrag01.md) | lokal (`snyk` CLI) |
-| 📓 Auftrag 2 | Dynamischer Sicherheitstest mit OWASP ZAP (DAST) | [tag15_Praxisauftrag02.md](tag15_Praxisauftrag02.md) | lokal (`docker` + ZAP) |
-| 📓 Auftrag 3 | Security-Scans in die CI/CD-Pipeline einbauen | [tag15_Praxisauftrag03.md](tag15_Praxisauftrag03.md) | [.github/workflows/](../.github/workflows/) |
+| Phase | Auftrag | Zeit | Ergebnis in `findings.md` | Erklärung |
+|-------|---------|------|---------------------------|-----------|
+| Praxis 1 | **P0** Setup und **P1** SCA und SAST mit Snyk | 30 Min | Drei bewertete Findings | [tag15_Praxisauftrag01.md](tag15_Praxisauftrag01.md) |
+| Praxis 2 | **P2** DAST mit ZAP und Fund von Hand prüfen | 20 Min | Zwei ZAP-Alerts, verifizierte SQL-Injection, Vergleich SAST / DAST | [tag15_Praxisauftrag02.md](tag15_Praxisauftrag02.md) |
+| für Schnelle | **P3** Fix und Re-Scan | 10 Min | Behobene SQL-Injection | [tag15_Praxisauftrag03.md](tag15_Praxisauftrag03.md) |
 
 ---
 
 ## Aufbau
 
-Auftrag 1 und 2 sind **lokale** Übungen an der geforkten DSVPWA-App (Snyk-CLI bzw. OWASP ZAP im
-Docker-Container). Auftrag 3 überführt beides in **GitHub-Actions-Workflows**. Die beiden
-Workflow-Dateien liegen deshalb im Wurzel-Ordner `.github/workflows/` — genau dort, wo sie im
-DSVPWA-Fork der Studierenden hingehören:
+Dieser Branch entspricht einem fertig bearbeiteten Classroom-Repository (`tag15-praxis`): DSVPWA liegt im Wurzelverzeichnis, die ausgefüllte [`findings.md`](../findings.md) daneben, und der Fix aus P3 ist in [`dsvpwa/attacks.py`](../dsvpwa/attacks.py), Zeile 39, umgesetzt.
 
 ```
-.github/workflows/
-├── aufgabe1-sast-sca.yml                           # Auftrag 3: Snyk SCA + Snyk Code (SAST)
-├── aufgabe2-dast.yml                               # Auftrag 3: App starten + OWASP ZAP Baseline
-└── tag15-praxis.yml                                # bildet die Aufträge hier beweisbar nach
-DOKUMENTATION.md                                    # Auftrag 1 + 2: Befunde und Massnahmen
+findings.md                         # Ergebnis von P1, P2 und P3
+dsvpwa/attacks.py                   # P3: parametrisierter Query in Zeile 39
+dsvpwa.py, dsvpwa/, db/, …          # DSVPWA (Original-README: DSVPWA.md)
+.github/workflows/tag15-praxis.yml  # wiederholt P1–P3 im Runner
 tag15/
-├── README.md                                       # diese Übersicht
-├── verify.sh                                       # lokale Selbstkontrolle
-├── tag15_Praxisauftrag01.md                        # Musterlösung Auftrag 1 (SAST/SCA)
-├── tag15_Praxisauftrag02.md                        # Musterlösung Auftrag 2 (DAST)
-└── tag15_Praxisauftrag03.md                        # Musterlösung Auftrag 3 (CI/CD)
+├── README.md                       # diese Übersicht
+├── verify.sh                       # lokale Selbstkontrolle
+├── tag15_Praxisauftrag01.md        # P0 und P1
+├── tag15_Praxisauftrag02.md        # P2
+└── tag15_Praxisauftrag03.md        # P3
 ```
 
-> **Hinweis:** `aufgabe1-sast-sca.yml` und `aufgabe2-dast.yml` gehören in den **DSVPWA-Fork** —
-> sie brauchen dessen Code und ein `SNYK_TOKEN`. Damit sie auf diesem Musterlösungs-Branch nicht
-> ins Leere laufen, sind sie auf `branches: [ "main" ]` begrenzt; im eigenen Fork ist `main` der
-> Default-Branch und sie starten bei jedem Push. Damit die Musterlösungen hier trotzdem beweisbar
-> grün laufen, bildet [`.github/workflows/tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml)
-> die Aufträge als eigene Jobs nach (DSVPWA klonen, starten, ZAP-Scan; Snyk optional).
+## Kernaussagen für die Besprechung
+
+- **SCA-Findings sind echt, aber nicht erreichbar.** DSVPWA nutzt nur die Python-Standardbibliothek. Flask, PyYAML, requests usw. stehen in `requirements.txt`, werden aber nie importiert. Richtige Massnahme: Abhängigkeit entfernen, nicht ignorieren.
+- **Erreichbarkeit hängt von der Konfiguration ab.** Die Command Injection (Zeile 167) läuft erst ab `--risk 3`. Sie bleibt ein echtes Risiko, weil sich die Konfiguration ändern kann.
+- **Ein grüner Baseline-Scan beweist nichts über Injection-Lücken.** ZAP meldet passiv nur Header- und Cookie-Probleme. Die SQL-Injection in `/users?id=` findet erst der Test von Hand (oder ein Full-Scan).
+- **SAST und DAST ergänzen sich.** SAST zeigt Datei und Zeile, DAST zeigt, was in der HTTP-Antwort tatsächlich sichtbar ist.
 
 ---
 
@@ -51,47 +43,33 @@ tag15/
 ### Lokal
 
 ```bash
-bash tag15/verify.sh        # alle drei Aufträge
-bash tag15/verify.sh 3      # nur Auftrag 3
+bash tag15/verify.sh        # P1, P2 und P3
+bash tag15/verify.sh 2      # nur P2
 ```
 
-Das Skript prüft ohne externe Accounts, dass die Musterlösungs-Dokumente und die
-Workflow-Dateien vorhanden, gültig (YAML) und inhaltlich vollständig sind (Snyk-Action,
-`SNYK_TOKEN`, ZAP-Baseline-Action …). Erwartete Ausgabe:
+Das Skript prüft `findings.md` mit denselben Regeln wie die Classroom-Prüfung (`praxis-day15`, `.github/classroom/checks/day-15.sh`) und kontrolliert den Fix aus P3. Erwartete Ausgabe:
 
 ```
-✅ Erfüllt:    11
+✅ Erfüllt:    8
 ❌ Fehlen:     0
 ```
 
 ### In GitHub Actions
 
-Nach einem Push auf dieses Repo läuft `tag15-praxis.yml`. Im Reiter **Actions** erscheinen:
+Nach jedem Push läuft [`tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml):
 
-```
-Auftrag 3 — Workflows prüfen             (YAML-Validierung)
-Auftrag 2/3 — DAST (OWASP ZAP)           (DSVPWA starten + ZAP Baseline Scan)
-Auftrag 1/3 — SAST/SCA (Snyk)            (läuft nur, wenn Secret SNYK_TOKEN gesetzt ist)
-```
-
-Der **DAST-Job läuft ohne Secret grün** — er klont DSVPWA, startet die App im Runner und scannt
-sie mit OWASP ZAP. Der **Snyk-Job** wird übersprungen, solange kein `SNYK_TOKEN`-Secret im Repo
-hinterlegt ist (der Workflow bleibt trotzdem gültig).
+| Job | Beweist |
+|-----|---------|
+| findings.md und Fix prüfen | `tag15/verify.sh` ist grün |
+| P1/P3 — SAST (Bandit) | Zeile 39 wird im Original gemeldet, nach dem Fix nicht mehr |
+| P2/P3 — SQL-Injection vorher und nachher | `id=1 OR 1=1` liefert im Original alle Benutzer, mit Fix keinen |
+| P2 — DAST (OWASP ZAP Baseline) | Der Baseline-Scan läuft. Bericht als Artefakt `zap-baseline-report`, Alerts in der Job-Zusammenfassung |
+| P1 — Snyk SCA und SAST (optional) | Läuft nur, wenn das Secret `SNYK_TOKEN` gesetzt ist |
 
 ---
 
 ## Voraussetzungen (für die eigene Durchführung)
 
-- GitHub-Account, in den DSVPWA geforkt wird
-- Kostenloser Snyk-Account; Auth-Token aus *Account Settings → General → Auth Token*
-- Snyk-CLI lokal installiert (`npm install -g snyk` oder offizieller Installer)
-- Python 3 (DSVPWA läuft mit der Standardbibliothek)
-- Docker (für den ZAP-Container in Auftrag 2)
-- GitHub-Secret `SNYK_TOKEN` im geforkten Repo (für Auftrag 3)
-
----
-
-> Die DevSecOps-Pipeline für den **TechStyle Online-Shop** ist Teil des **Projekt-Blocks** und
-> liegt im Repo `techstyle` (Branch `day_15_solution`), nicht hier.
->
-> Online-Beispiellösung: <https://github.com/tbzdevops/tag11-dsvpwa-musterloesung>
+- GitHub Codespace (empfohlen) oder lokal Python 3, Node.js und Docker
+- Kostenloser Snyk-Account mit aktiviertem **Snyk Code** (Settings → Snyk Code)
+- Snyk CLI: `npm install -g snyk`, danach `snyk auth`

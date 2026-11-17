@@ -1,113 +1,91 @@
-# Musterlösung – Auftrag 2: Dynamischer Sicherheitstest mit OWASP ZAP (DAST)
+# Musterlösung – P2 Dynamischer Test mit OWASP ZAP (DAST)
 
-**Ziel:** Die **laufende** Anwendung von aussen wie ein Angreifer prüfen. DAST findet Lücken, die
-im ruhenden Code nicht sichtbar sind (fehlende Security-Header, Directory Listing, Verhalten zur
-Laufzeit).
+**Phase:** Praxis 2, direkt nach Theorie 2 (DAST, Baseline- vs. Full-Scan) | **Zeit:** 20 Min | **Format:** Einzelarbeit
+
+**Ziel:** Die **laufende** Anwendung aus Angreifersicht prüfen und erleben, was ein passiver Baseline-Scan findet und was nicht.
 
 ---
 
-## 1. Vorbereitung
+## 1. Anwendung starten
 
 ```bash
-# DSVPWA-Fork (aus Auftrag 1) verwenden
-cd DSVPWA
-
-# OWASP ZAP als Docker-Image holen
-docker pull zaproxy/zap-stable:latest
+python dsvpwa.py --host 0.0.0.0
 ```
 
----
+DSVPWA läuft auf Port `65413`. Im Codespace erscheint die Port-Weiterleitung automatisch, lokal unter <http://localhost:65413>.
 
-## 2. Anwendung lokal starten
+## 2. ZAP-Baseline-Scan
+
+In einem zweiten Terminal:
 
 ```bash
-python dsvpwa.py
+# Codespace / Linux: der Container teilt das Netzwerk des Hosts
+docker run --rm --network host -t zaproxy/zap-stable zap-baseline.py -t http://localhost:65413
+
+# Docker Desktop (macOS / Windows): localhost im Container ist der Container selbst
+docker run --rm -t zaproxy/zap-stable zap-baseline.py -t http://host.docker.internal:65413
 ```
 
-Die App lauscht standardmässig auf Port **65413**. In der Konsole erscheint sinngemäss:
+Der Baseline-Scan crawlt die Seiten (Spider, standardmässig 1 Minute) und wertet die Antworten **passiv** aus. Er schickt keine Angriffs-Payloads. Am Ende stehen Zeilen wie:
 
+```text
+WARN-NEW: Content Security Policy (CSP) Header Not Set [10038] x 4
+WARN-NEW: Missing Anti-clickjacking Header [10020] x 4
+WARN-NEW: X-Content-Type-Options Header Missing [10021] x 6
+WARN-NEW: Server Leaks Version Information via "Server" HTTP Response Header Field [10036] x 8
+FAIL-NEW: 0    FAIL-INPROG: 0    WARN-NEW: ...    PASS: ...
 ```
-Navigate to http://127.0.0.1:65413 to access DSVPWA
+
+Die genaue Liste hängt von der ZAP-Version ab. Den echten Lauf zeigt der Job «P2 — DAST (OWASP ZAP)» in [`.github/workflows/tag15-praxis.yml`](../.github/workflows/tag15-praxis.yml).
+
+## 3. Zwei Alerts dokumentieren
+
+Siehe [`findings.md`](../findings.md), Abschnitt P2. Für jeden Alert: Risiko, betroffene URL und Behebung. Die Behebung ist bei Header-Alerts immer ein Header in der HTTP-Antwort, nicht eine Änderung an der Geschäftslogik.
+
+DSVPWA setzt die Header in `dsvpwa/handlers.py` selbst. Mit `curl -s -D - -o /dev/null http://localhost:65413/` sieht man sie:
+
+```text
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.12.11
+X-XSS-Protection: 0
+Content-Security-Policy: default-src * 'unsafe-inline'
 ```
 
-Kontrolle: URL im Browser öffnen – die verwundbare Demo-App muss erreichbar sein.
+`X-Frame-Options` und `X-Content-Type-Options` fehlen, die CSP erlaubt alles, und der `Server`-Header verrät die Python-Version.
 
----
+## 4. Fund von Hand prüfen
 
-## 3. DAST-Scan mit OWASP ZAP (Baseline)
-
-ZAP läuft im Container; die App läuft auf dem Host. Mit `host.docker.internal` erreicht der
-Container den Host:
+Der Baseline-Scan meldet die SQL-Injection **nicht**, weil er nichts einschleust. Von Hand:
 
 ```bash
-docker run --add-host=host.docker.internal:host-gateway \
-  -t zaproxy/zap-stable:latest \
-  zap-baseline.py -t http://host.docker.internal:65413
+curl "http://localhost:65413/users?id=1"
+curl "http://localhost:65413/users?id=1%20OR%201=1"
 ```
 
-> `--add-host=host.docker.internal:host-gateway` erstellt im Container einen DNS-Eintrag, der auf
-> die Host-IP zeigt – so landet der Scan auf der lokal gestarteten App.
->
-> **Alternative GUI:** ZAP von <https://www.zaproxy.org> installieren, *Automated Scan* wählen,
-> Ziel-URL `http://127.0.0.1:65413` eintragen.
+| Request | Ergebnis |
+|---------|----------|
+| `/users?id=1` | Eine Zeile: `admin` |
+| `/users?id=1%20OR%201=1` | Vier Zeilen: `admin`, `guest`, `loella`, `weitzel` |
 
----
+Die Datenbank führt `WHERE id=1 OR 1=1` aus. Damit ist die Lücke bestätigt. Ursache: `dsvpwa/attacks.py`, Zeile 39. Snyk Code hat genau diese Stelle in P1 gemeldet.
 
-## 4. Ergebnisse analysieren
+**Einordnung:** Ein **Full-Scan** (`zap-full-scan.py`) würde die Lücke finden, weil er Payloads wie `' OR '1'='1` an jeden Parameter schickt. Er dauert aber deutlich länger und darf nur gegen Test- oder Staging-Umgebungen laufen.
 
-Der Baseline-Scan gibt eine Tabelle mit Alerts aus (PASS / WARN / FAIL):
+## 5. Vergleich SAST / DAST
 
-```
-WARN-NEW: Cross Domain JavaScript Source File Inclusion
-WARN-NEW: Missing Anti-clickjacking Header (X-Frame-Options)        [1]
-WARN-NEW: X-Content-Type-Options Header Missing
-WARN-NEW: Absence of Anti-CSRF Tokens
-FAIL-NEW: SQL Injection                                             [1]
-```
+| Nur SAST gefunden | Nur DAST gefunden |
+|-------------------|-------------------|
+| SQL-Injection (`/users`, Login) | Fehlende oder zu offene Security-Header |
+| Command Injection (bei `--risk 1` nicht erreichbar) | `Server`-Header mit Versionsangabe |
+| Unsichere Deserialisierung mit `pickle` | Cookie-Flags (`HttpOnly`, `SameSite`) |
 
-**Mindestens eine kritische Lücke verifizieren – SQL Injection manuell nachstellen:**
+SAST sieht den Code, aber nicht die HTTP-Antwort. DAST sieht die HTTP-Antwort, aber nicht den Code. Darum braucht es beide.
 
-```bash
-# Verdächtigen Parameter manuell mit einem Injection-String testen
-curl "http://127.0.0.1:65413/?id=1' OR '1'='1"
-```
+## Typische Stolpersteine
 
-Liefert die Anwendung daraufhin **alle** Datensätze (statt einem), ist die Injection bestätigt.
-
-| Fund (DAST) | Im SAST sichtbar? | Behebung |
-|-------------|-------------------|----------|
-| SQL Injection | ja (Auftrag 1) | Parametrisierte Queries |
-| Fehlender `X-Frame-Options` Header | **nein** | Header serverseitig setzen (Clickjacking-Schutz) |
-| Fehlender `X-Content-Type-Options` | **nein** | `nosniff` Header setzen |
-| Directory Listing | **nein** | Verzeichnis-Browsing deaktivieren |
-
-> **Kernaussage:** DAST deckt **Konfigurations- und Laufzeitprobleme** auf (Header, Listing), die
-> ein reiner Code-Scan nicht sieht. SAST und DAST ergänzen sich.
-
----
-
-## 5. Ergebnisdokumentation
-
-- Welche Alerts hat ZAP gemeldet (FAIL vs. WARN)?
-- Welche davon waren in der statischen Analyse **nicht** sichtbar?
-- Behebungsvorschläge (Header setzen, Eingaben filtern, Listing aus).
-
-Beispiel-Behebung der fehlenden Header in einer Flask-App:
-
-```python
-@app.after_request
-def set_security_headers(resp):
-    resp.headers["X-Frame-Options"] = "DENY"
-    resp.headers["X-Content-Type-Options"] = "nosniff"
-    resp.headers["Content-Security-Policy"] = "default-src 'self'"
-    return resp
-```
-
----
-
-## Ergebnis
-
-- DAST-Scan mit OWASP ZAP gegen die laufende DSVPWA durchgeführt.
-- Mindestens eine kritische Lücke (SQL Injection) manuell verifiziert.
-- Funde dokumentiert, inkl. der nur dynamisch sichtbaren Header-Probleme.
-- Aufwand/Nutzen von DAST verstanden (langsamer, dafür realistische Aussensicht).
+| Problem | Lösung |
+|---------|--------|
+| ZAP meldet `Connection refused` | Auf Docker Desktop `host.docker.internal` statt `localhost` verwenden, unter Linux `--network host` |
+| Scan findet nur eine Seite | App läuft nicht oder falscher Port: `curl http://localhost:65413/` prüfen |
+| `zaproxy/zap-stable` lädt lange | Das Image ist ca. 1.5 GB gross. Im Codespace dauert der erste Pull 1–2 Minuten |
+| Kein Docker verfügbar | ZAP-Desktop-App von <https://www.zaproxy.org/> und **Automated Scan** verwenden |
